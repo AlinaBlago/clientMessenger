@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import serverResponse.AuthorizationResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;

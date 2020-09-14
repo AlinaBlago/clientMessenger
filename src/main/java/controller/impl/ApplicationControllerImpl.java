@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import massage.Message;
+import serverResponse.AuthorizationResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;

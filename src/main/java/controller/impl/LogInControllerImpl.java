@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import serverResponse.AuthorizationResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
