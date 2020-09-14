@@ -8,6 +8,8 @@ import javafx.scene.control.TextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public interface LogUpController extends Initializable {
 
     @FXML
@@ -25,7 +27,7 @@ public interface LogUpController extends Initializable {
     @FXML
     PasswordField repeatPasswordField = new PasswordField();
 
-    Logger logger = LoggerFactory.getLogger(LogInController.class);
+    Logger logger = LoggerFactory.getLogger(LogUpController.class);
 
-    void initialize();
+    void initialize() throws IOException;
 }

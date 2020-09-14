@@ -2,6 +2,8 @@ package controller.impl;
 
 import com.google.gson.Gson;
 import controller.LogInController;
+import data.CurrentUser;
+import data.User;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -47,28 +49,29 @@ public class LogInControllerImpl implements LogInController {
                     }
                     in.close();
                     Gson gson = new Gson();
-//                    User user = new User("" , loginField.getText() , "");
-//                    AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
-//                    CurrentUserInfo.Init(user , response1.getResponseMessage());
+                    User user = new User("" , loginField.getText() , "");
+                    AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
+                    CurrentUser.Init(user , response1.getResponseMessage());
 
-//                    if(response1.getResponseID() == 0) {
-//                        logger.info("User logined");
-//                        //Открываем главное окно
-//                        Stage applStage = new Stage();
-//                        FXMLLoader loader = new FXMLLoader();
-//                        loader.setLocation(getClass().getResource("/appl.fxml"));
-//                        Parent root = loader.load();
-//                        applStage.setScene(new Scene(root, 620, 680));
-//                        applStage.show();
-//
-//                        //Закрываем текущее окно
-//                        Stage currentStageToClose = (Stage) signUpButton.getScene().getWindow();
-//                        currentStageToClose.close();
-//                    }else{
-//                        Alert alert = new Alert(Alert.AlertType.WARNING);
-//                        alert.setContentText("Wrong login or password");
-//                        alert.show();
-//                    }
+                    if(response1.getResponseID() == 0) {
+                        logger.info("User logined");
+
+                        //Открываем главное окно
+                        Stage applStage = new Stage();
+                        FXMLLoader loader = new FXMLLoader();
+                        loader.setLocation(getClass().getResource("/appl.fxml"));
+                        Parent root = loader.load();
+                        applStage.setScene(new Scene(root, 620, 680));
+                        applStage.show();
+
+                        //Закрываем текущее окно
+                        Stage currentStageToClose = (Stage) signUpButton.getScene().getWindow();
+                        currentStageToClose.close();
+                    }else {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setContentText("Wrong login or password");
+                        alert.show();
+                    }
 
                 } catch (Exception e) {
                     logger.info(e.getMessage());
@@ -82,7 +85,7 @@ public class LogInControllerImpl implements LogInController {
                 Stage signUp = new Stage();
                 Parent signUpSceneRoot = null;
                 try {
-                    signUpSceneRoot = FXMLLoader.load(LogInControllerImpl.this.getClass().getResource("/logup.fxml"));
+                    signUpSceneRoot = FXMLLoader.load(LogInControllerImpl.this.getClass().getResource("/logUp.fxml"));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
