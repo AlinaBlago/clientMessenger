@@ -51,7 +51,7 @@ public class LogInControllerImpl implements LogInController {
                     Gson gson = new Gson();
                     User user = new User("" , loginField.getText() , "");
                     AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
-                    CurrentUser.Init(user , response1.getResponseMessage());
+                    CurrentUser.init(user , response1.getResponseMessage());
 
                     if(response1.getResponseID() == 0) {
                         logger.info("User logined");

@@ -18,12 +18,12 @@ public class CurrentUser {
         return currentKey;
     }
 
-    public static void Init(User user , String key){
+    public static void init(User user , String key){
         currentUser = user;
         currentKey = key;
     }
 
-    public static void LogOut(){
+    public static void logOut(){
         currentKey = "";
         currentUser = null;
     }

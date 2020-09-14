@@ -3,6 +3,7 @@ package controller.impl;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import controller.ApplicationController;
+import data.CurrentUser;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -15,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import massage.Message;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -106,11 +108,11 @@ public class ApplicationControllerImpl implements ApplicationController {
                         logger.info("Staring send 'sendMessage' to server");
                         StringBuffer url = new StringBuffer();
                         url.append("http://localhost:8080/sendMessage?senderLogin=");
-                        url.append(CurrentUserInfo.getCurrentUser().getLogin());
+                        url.append(CurrentUser.getCurrentUser().getLogin());
                         url.append("&senderKey=");
-                        url.append(CurrentUserInfo.getCurrentKey());
+                        url.append(CurrentUser.getCurrentKey());
                         url.append("&receiverLogin=");
-                        url.append(users_listview.getSelectionModel().getSelectedItem());
+                        url.append(usersListView.getSelectionModel().getSelectedItem());
                         url.append("&message=");
                         String mesg = sendMessageField.getText().replaceAll(" " , "%20");
                         url.append(mesg);
@@ -134,7 +136,7 @@ public class ApplicationControllerImpl implements ApplicationController {
                         DateFormat formatter = new SimpleDateFormat("HH:mm");
                         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
                         String dateFormatted = formatter.format(System.currentTimeMillis());
-                        chatListView.getItems().add(dateFormatted + " " + CurrentUserInfo.getCurrentUser().getLogin() + " : " + sendMessageField.getText());
+                        chatListView.getItems().add(dateFormatted + " " + CurrentUser.getCurrentUser().getLogin() + " : " + sendMessageField.getText());
 
                         int index = chatListView.getItems().size() - 1;
                         chatListView.scrollTo(index);
@@ -165,9 +167,9 @@ public class ApplicationControllerImpl implements ApplicationController {
             logger.info("Start send 'findUser' to server");
             StringBuffer url = new StringBuffer();
             url.append("http://localhost:8080/isUserExists?senderLogin=");
-            url.append(CurrentUserInfo.getCurrentUser().getLogin());
+            url.append(CurrentUser.getCurrentUser().getLogin());
             url.append("&senderKey=");
-            url.append(CurrentUserInfo.getCurrentKey());
+            url.append(CurrentUser.getCurrentKey());
             url.append("&findUserLogin=");
             url.append(findUserLogin.getText());
 
@@ -207,7 +209,7 @@ public class ApplicationControllerImpl implements ApplicationController {
 
     @Override
     public void setCurrentUserNameToWindow() {
-        String text = "Вы вошли под логином: " + CurrentUserInfo.getCurrentUser().getLogin();
+        String text = "Вы вошли под логином: " + CurrentUser.getCurrentUser().getLogin();
         currentUserNameLabel.setText(text);
     }
 
@@ -219,9 +221,9 @@ public class ApplicationControllerImpl implements ApplicationController {
                 do {
                     StringBuffer url = new StringBuffer();
                     url.append("http://localhost:8080/haveNewMessages?senderLogin=");
-                    url.append(CurrentUserInfo.getCurrentUser().getLogin());
+                    url.append(CurrentUser.getCurrentUser().getLogin());
                     url.append("&senderKey=");
-                    url.append(CurrentUserInfo.getCurrentKey());
+                    url.append(CurrentUser.getCurrentKey());
 
                     URL obj = new URL(url.toString());
                     HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
@@ -254,7 +256,7 @@ public class ApplicationControllerImpl implements ApplicationController {
                         ObservableList<String> arrUsers = usersListView.getItems();
 
                         usersChatUpdated.forEach(item -> {
-                            if (CurrentUserInfo.currentChat.equals(item)) {
+                            if (CurrentUser.currentChat.equals(item)) {
                                 Platform.runLater(() -> {
                                     try {
                                         UpdateChatForUser(item);
@@ -280,8 +282,8 @@ public class ApplicationControllerImpl implements ApplicationController {
 
         logger.info("Thread bound");
 
-        CurrentUserInfo.ourThread = new Thread(task);
-        CurrentUserInfo.ourThread.start();
+        CurrentUser.ourThread = new Thread(task);
+        CurrentUser.ourThread.start();
         logger.info("Thread started");
     }
 
@@ -290,9 +292,9 @@ public class ApplicationControllerImpl implements ApplicationController {
         logger.info("Sending 'updateChatForUser' request to server");
         StringBuffer url = new StringBuffer();
         url.append("http://localhost:8080/getChat?senderLogin=");
-        url.append(CurrentUserInfo.getCurrentUser().getLogin());
+        url.append(CurrentUser.getCurrentUser().getLogin());
         url.append("&senderKey=");
-        url.append(CurrentUserInfo.getCurrentKey());
+        url.append(CurrentUser.getCurrentKey());
         url.append("&companionLogin=");
         url.append(login);
 
@@ -326,7 +328,7 @@ public class ApplicationControllerImpl implements ApplicationController {
             chatListView.getItems().add(dateFormatted + " " + msg.getSender() + " : " + msg.getMessage());
         }
         chatListView.refresh();
-        CurrentUserInfo.currentChat = login;
+        CurrentUser.currentChat = login;
 
         int index = chatListView.getItems().size() - 1;
         chatListView.scrollTo(index);
@@ -337,9 +339,9 @@ public class ApplicationControllerImpl implements ApplicationController {
             logger.info("Request 'loaduserchat' configuration");
             StringBuffer url = new StringBuffer();
             url.append("http://localhost:8080/GetUserChats?login=");
-            url.append(CurrentUserInfo.getCurrentUser().getLogin());
+            url.append(CurrentUser.getCurrentUser().getLogin());
             url.append("&key=");
-            url.append(CurrentUserInfo.getCurrentKey());
+            url.append(CurrentUser.getCurrentKey());
 
             URL obj = new URL(url.toString());
             HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
@@ -361,7 +363,7 @@ public class ApplicationControllerImpl implements ApplicationController {
 
             Type listType = new TypeToken<Set<String>>(){}.getType();
             Set<String> currentUsersChat = gson.fromJson(response1.getResponseMessage() , listType);
-            currentUsersChat.remove(CurrentUserInfo.getCurrentUser().getLogin());
+            currentUsersChat.remove(CurrentUser.getCurrentUser().getLogin());
             usersListView.getItems().addAll(currentUsersChat);
             usersListView.refresh();
 
@@ -370,8 +372,8 @@ public class ApplicationControllerImpl implements ApplicationController {
     @Override
     public void logOut() {
         logger.info("Logout command");
-        CurrentUserInfo.LogOut();
-        CurrentUserInfo.ourThread.stop();
+        CurrentUser.logOut();
+        CurrentUser.ourThread.stop();
         logger.info("Thread was stopped");
 
         Stage stageToClose = (Stage) logoutButton.getScene().getWindow();
