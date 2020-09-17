@@ -44,12 +44,12 @@
                         <Font name="Gabriola" size="25.0" />
                     </font>
                 </Button>
-                <Button fx:id="signUp_btn" cache="true" ellipsisString="" layoutX="178.0" layoutY="487.0" mnemonicParsing="false" style="-fx-background-color: #82E0AA; -fx-background-radius: 10;" text="Зарегистрироваться" textFill="WHITE">
+                <Button fx:id="signUp_btn" cache="true" ellipsisString="" layoutX="210.0" layoutY="487.0" mnemonicParsing="false" style="-fx-background-color: #82E0AA; -fx-background-radius: 10;" text="Зарегистрироваться" textFill="WHITE">
                     <font>
                         <Font name="Gabriola" size="25.0" />
                     </font>
                 </Button>
-                <PasswordField fx:id="password_field" layoutX="230.0" layoutY="327.0" />
+                <PasswordField fx:id="password_field" layoutX="200.0" layoutY="320.0" prefHeight="40.0" prefWidth="220.0" style="-fx-background-radius: 10;" />
             </children>
         </AnchorPane>
     </children>
