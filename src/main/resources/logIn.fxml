@@ -38,18 +38,18 @@
                         <Font name="Gabriola" size="30.0" />
                     </font>
                 </Label>
-                <TextField fx:id="login_field" layoutX="200.0" layoutY="254.0" prefHeight="40.0" prefWidth="220.0" style="-fx-background-radius: 10;" />
-                <Button fx:id="login_btn" layoutX="257.0" layoutY="392.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="106.0" style="-fx-background-color: #F06A6A; -fx-background-radius: 10;" text="Войти" textFill="WHITE">
+                <TextField fx:id="loginField" layoutX="200.0" layoutY="254.0" prefHeight="40.0" prefWidth="220.0" style="-fx-background-radius: 10;" />
+                <Button fx:id="loginButton" layoutX="257.0" layoutY="392.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="106.0" style="-fx-background-color: #F06A6A; -fx-background-radius: 10;" text="Войти" textFill="WHITE">
                     <font>
                         <Font name="Gabriola" size="25.0" />
                     </font>
                 </Button>
-                <Button fx:id="signUp_btn" cache="true" ellipsisString="" layoutX="210.0" layoutY="487.0" mnemonicParsing="false" style="-fx-background-color: #82E0AA; -fx-background-radius: 10;" text="Зарегистрироваться" textFill="WHITE">
+                <Button fx:id="signUpButton" cache="true" ellipsisString="" layoutX="210.0" layoutY="487.0" mnemonicParsing="false" style="-fx-background-color: #82E0AA; -fx-background-radius: 10;" text="Зарегистрироваться" textFill="WHITE">
                     <font>
                         <Font name="Gabriola" size="25.0" />
                     </font>
                 </Button>
-                <PasswordField fx:id="password_field" layoutX="200.0" layoutY="320.0" prefHeight="40.0" prefWidth="220.0" style="-fx-background-radius: 10;" />
+                <PasswordField fx:id="passwordField" layoutX="200.0" layoutY="320.0" prefHeight="40.0" prefWidth="220.0" style="-fx-background-radius: 10;" />
             </children>
         </AnchorPane>
     </children>

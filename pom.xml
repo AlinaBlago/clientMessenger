@@ -36,9 +36,7 @@
                 <mainClass>runner.Main</mainClass>
             </configuration>
             </plugin>
-
-
-        </plugins>
+                </plugins>
     </build>
 
     <dependencies>
@@ -63,6 +61,7 @@
             <artifactId>javafx-fxml</artifactId>
             <version>13</version>
         </dependency>
+
     </dependencies>
 
 </project>

@@ -11,21 +11,6 @@ import java.io.IOException;
 
 public interface LogInController extends Initializable {
 
-    @FXML
-    TextField loginField = new TextField();
-
-    @FXML
-    Button loginButton = new Button();
-
-    @FXML
-    Button signUpButton = new Button();
-
-    @FXML
-    PasswordField passwordField = new PasswordField();
-
     Logger logger = LoggerFactory.getLogger(LogInController.class);
-
-    @FXML
-    void initialize() throws IOException;
 
 }

@@ -11,10 +11,11 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import massage.Message;
 import serverResponse.AuthorizationResponse;
@@ -34,32 +35,39 @@ import java.util.TimeZone;
 
 public class ApplicationControllerImpl implements ApplicationController {
 
+    @FXML
+    Label currentUserNameLabel;
+
+    @FXML
+    Button logoutButton;
+
+    @FXML
+    Button sendButton;
+
+    @FXML
+    ListView<String> usersListView;
+
+    @FXML
+    ListView<String> chatListView;
+
+    @FXML
+    TextField sendMessageField;
+
+    @FXML
+    TextField findUserLogin;
+
+    @FXML
+    Button findUserButton;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        logoutButton.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                logOut();
-            }
-        });
+        logoutButton.setOnAction(this::logOut);
 
-        findUserButton.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                findUser();
-            }
-        });
+        findUserButton.setOnAction(this::findUser);
 
-        sendButton.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                send();
-            }
-        });
+        sendButton.setOnAction(this::send);
 
-        usersListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                usersListViewChanged(newValue);
-            }
-        });
+        usersListView.getSelectionModel().selectedItemProperty().addListener(this::usersListViewChanged);
 
         bindThreadCheckNewMessages();
 
@@ -73,8 +81,9 @@ public class ApplicationControllerImpl implements ApplicationController {
         setCurrentUserNameToWindow();
     }
 
+    @FXML
     @Override
-    public void usersListViewChanged(String newValue) {
+    public void usersListViewChanged(ObservableValue<? extends String> observable, String oldValue, String newValue) {
         try {
             UpdateChatForUser(newValue);
         } catch (IOException e) {
@@ -83,8 +92,9 @@ public class ApplicationControllerImpl implements ApplicationController {
         }
     }
 
+    @FXML
     @Override
-    public void send() {
+    public void send(ActionEvent event) {
         if (usersListView.getSelectionModel().isEmpty() == true){
             logger.info("Send function call: user is empty");
             return;
@@ -158,8 +168,9 @@ public class ApplicationControllerImpl implements ApplicationController {
         }
     }
 
+    @FXML
     @Override
-    public void findUser() {
+    public void findUser(ActionEvent event) {
         if (findUserLogin.getText().length() == 0){
             return;
         }
@@ -336,7 +347,7 @@ public class ApplicationControllerImpl implements ApplicationController {
     }
 
     @Override
-    public void loadUserChats() throws IOException {
+    public void loadUserChats () throws IOException {
             logger.info("Request 'loaduserchat' configuration");
             StringBuffer url = new StringBuffer();
             url.append("http://localhost:8080/GetUserChats?login=");
@@ -370,8 +381,9 @@ public class ApplicationControllerImpl implements ApplicationController {
 
     }
 
+    @FXML
     @Override
-    public void logOut() {
+    public void logOut(ActionEvent event) {
         logger.info("Logout command");
         CurrentUser.logOut();
         CurrentUser.ourThread.stop();

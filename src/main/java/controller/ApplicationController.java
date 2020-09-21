@@ -1,11 +1,13 @@
 package controller;
 
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.event.ActionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,37 +15,13 @@ import java.io.IOException;
 
 public interface ApplicationController extends Initializable {
 
-    @FXML
-    Label currentUserNameLabel = new Label();
-
-    @FXML
-    Button logoutButton = new Button();
-
-    @FXML
-    Button sendButton = new Button();
-
-    @FXML
-    ListView<String> usersListView = new ListView<>();
-
-    @FXML
-    ListView<String> chatListView = new ListView<>();
-
-    @FXML
-    TextField sendMessageField = new TextField();
-
-    @FXML
-    TextField findUserLogin = new TextField();
-
-    @FXML
-    Button findUserButton = new Button();
-
     Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
-    void usersListViewChanged(String newValue);
+    void usersListViewChanged(ObservableValue<? extends String> observable, String oldValue, String newValue);
 
-    void send();
+    void send(ActionEvent event);
 
-    void findUser();
+    void findUser(ActionEvent event);
 
     void setCurrentUserNameToWindow();
 
@@ -53,5 +31,5 @@ public interface ApplicationController extends Initializable {
 
     void loadUserChats() throws IOException;
 
-    void logOut();
+    void logOut(ActionEvent event);
 }

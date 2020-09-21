@@ -12,22 +12,6 @@ import java.io.IOException;
 
 public interface LogUpController extends Initializable {
 
-    @FXML
-    TextField nameField = new TextField();
-
-    @FXML
-    TextField loginField = new TextField();
-
-    @FXML
-    Button signUpButton = new Button();
-
-    @FXML
-    PasswordField passwordField = new PasswordField();
-
-    @FXML
-    PasswordField repeatPasswordField = new PasswordField();
-
     Logger logger = LoggerFactory.getLogger(LogUpController.class);
 
-    void initialize() throws IOException;
 }
