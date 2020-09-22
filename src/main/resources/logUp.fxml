@@ -40,7 +40,7 @@
                 </Label>
                 <TextField fx:id="nameField" layoutX="200.0" layoutY="231.0" prefHeight="40.0" prefWidth="220.0" style="-fx-background-radius: 10;" />
                 <TextField fx:id="loginField" layoutX="200.0" layoutY="320.0" prefHeight="40.0" prefWidth="220.0" style="-fx-background-radius: 10;" />
-                <Button fx:id="signUpButton" cache="true" ellipsisString="" layoutX="178.0" layoutY="589.0" mnemonicParsing="false" style="-fx-background-color: #F06A6A; -fx-background-radius: 10;" text="Зарегистрироваться" textFill="WHITE">
+                <Button fx:id="signUpButton" cache="true" ellipsisString="" layoutX="213.0" layoutY="589.0" mnemonicParsing="false" style="-fx-background-color: #F06A6A; -fx-background-radius: 10;" text="Зарегистрироваться" textFill="WHITE">
                     <font>
                         <Font name="Gabriola" size="25.0" />
                     </font>
@@ -65,8 +65,8 @@
                         <Font name="Gabriola" size="20.0" />
                     </font>
                 </Label>
-                <PasswordField fx:id="passwordField" layoutX="200.0" layoutY="413.0" prefHeight="40.0" prefWidth="220.0" />
-                <PasswordField fx:id="repeatPasswordField" layoutX="200.0" layoutY="515.0" prefHeight="40.0" prefWidth="220.0" />
+                <PasswordField fx:id="passwordField" layoutX="200.0" layoutY="413.0" prefHeight="40.0" prefWidth="220.0" style="-fx-background-radius: 10;" />
+                <PasswordField fx:id="repeatPasswordField" layoutX="200.0" layoutY="515.0" prefHeight="40.0" prefWidth="220.0" style="-fx-background-radius: 10;" />
             </children>
         </AnchorPane>
     </children>

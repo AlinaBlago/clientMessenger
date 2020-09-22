@@ -1,47 +1,62 @@
 package providers;
 
 import data.ServerArgument;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
 import java.util.List;
 
-public class ServerConnectionProvider<T> {
-    public static String ServerURL = "http://localhost:8080";
 
-    public T sendRequest(String serverFunction , List<ServerArgument> arguments , RequestType type) throws IOException {
-        if(!ServerURL.isBlank()) {
+public class ServerConnectionProvider {
+    private static ServerConnectionProvider instance;
 
-            StringBuffer url = new StringBuffer();
-            url.append(ServerURL);
-            url.append("/");
-            url.append(serverFunction);
-            url.append("?");
+    public static final String serverURL = "http://localhost:8080";
 
-            for(int i = 0 ; i < arguments.size() ; i++){
-                url.append(arguments.get(i).ToServerStyleString());
-                if(i + 1 < arguments.size()){
-                    url.append("&");
-                }
+    public static ServerConnectionProvider getInstance() {
+        if(instance == null) instance = new ServerConnectionProvider();
+        return instance;
+    }
+
+    private ServerConnectionProvider(){}
+
+    public ResponseEntity<Integer> loginRequest(String serverFunction, List<ServerArgument> arguments, RequestType type) throws IOException {
+        if(!serverURL.isBlank()) {
+
+            String url = createURL(serverURL, serverFunction, arguments);
+
+            RestTemplate template = new RestTemplate();
+            ResponseEntity<Integer> result = null;
+            try{
+                result = template.getForEntity(url, Integer.class );
+            } catch (Exception e){
+                //TODO : logger
+               e.printStackTrace();
             }
+            return result;
 
-            URL obj = new URL(url.toString());
-
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-            connection.setRequestMethod(type.getType());
-
-            ResponseEtity<T> restTemplate = new ResponseEtity<T>();
-
-            T result = restTemplate.getForObject(obj, T);
-            System.out.println(result);
-
-            return answer.toString();
-        }else{
+        } else{
             throw new IOException("The server url was not found.");
             //TODO : logger
         }
     }
+
+    private String createURL(String serverURL, String serverFunction, List<ServerArgument> arguments){
+        StringBuffer url = new StringBuffer();
+        url.append(ServerConnectionProvider.serverURL);
+        url.append("/");
+        url.append(serverFunction);
+        url.append("?");
+
+        for(int i = 0 ; i < arguments.size() ; i++){
+            url.append(arguments.get(i).toServerStyleString());
+            if(i + 1 < arguments.size()){
+                url.append("&");
+            }
+        }
+
+        return url.toString();
+    }
+
 }

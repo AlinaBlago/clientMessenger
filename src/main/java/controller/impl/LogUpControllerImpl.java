@@ -1,6 +1,5 @@
 package controller.impl;
 
-import com.google.gson.Gson;
 import controller.LogUpController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -94,32 +93,32 @@ public class LogUpControllerImpl implements LogUpController {
 
             logger.info("Request was sent");
 
-            Gson gson = new Gson();
-
-            AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
-            if (response1.getResponseID() == 0) {
-                logger.info("Registration successful");
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Answer");
-                alert.setHeaderText("Results:");
-                alert.setContentText(response1.getResponseMessage());
-                alert.show();
-                Stage stage = (Stage) signUpButton.getScene().getWindow();
-                stage.close();
-                return;
-            }
-            if (response1.getResponseID() == 2) {
-                logger.warn("Registration failed");
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(response1.getResponseMessage());
-                alert.setHeaderText("Results:");
-                alert.setContentText("Такой пользователь уже существует");
-                alert.show();
-                loginField.setText("");
-                nameField.setText("");
-                passwordField.setText("");
-                repeatPasswordField.setText("");
-            }
+//            Gson gson = new Gson();
+//
+//            AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
+//            if (response1.getResponseID() == 0) {
+//                logger.info("Registration successful");
+//                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//                alert.setTitle("Answer");
+//                alert.setHeaderText("Results:");
+//                alert.setContentText(response1.getResponseMessage());
+//                alert.show();
+//                Stage stage = (Stage) signUpButton.getScene().getWindow();
+//                stage.close();
+//                return;
+//            }
+//            if (response1.getResponseID() == 2) {
+//                logger.warn("Registration failed");
+//                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//                alert.setTitle(response1.getResponseMessage());
+//                alert.setHeaderText("Results:");
+//                alert.setContentText("Такой пользователь уже существует");
+//                alert.show();
+//                loginField.setText("");
+//                nameField.setText("");
+//                passwordField.setText("");
+//                repeatPasswordField.setText("");
+ //           }
         } catch (Exception e) {
             // TODO
         }

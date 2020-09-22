@@ -1,7 +1,5 @@
 package controller.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import controller.ApplicationController;
 import data.CurrentUser;
 import javafx.application.Platform;
@@ -199,20 +197,20 @@ public class ApplicationControllerImpl implements ApplicationController {
             }
             in.close();
             logger.info("request sended");
-            Gson gson = new Gson();
+//            Gson gson = new Gson();
+//
+//            AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
 
-            AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
-
-            if(response1.getResponseID() == 0){
-                logger.info("Response 0 from server");
-                usersListView.getItems().add(findUserLogin.getText());
-                usersListView.refresh();
-            }else {
-                logger.warn("Response not 0 from server : " + response1.getResponseMessage());
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setContentText("User not found");
-                alert.show();
-            }
+//            if(response1.getResponseID() == 0){
+//                logger.info("Response 0 from server");
+//                usersListView.getItems().add(findUserLogin.getText());
+//                usersListView.refresh();
+//            }else {
+//                logger.warn("Response not 0 from server : " + response1.getResponseMessage());
+//                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//                alert.setContentText("User not found");
+//                alert.show();
+            //}
         } catch (Exception e){
             logger.warn(e.getMessage());
             System.out.println(e.getMessage());
@@ -250,38 +248,38 @@ public class ApplicationControllerImpl implements ApplicationController {
                         response.append(inputLine);
                     }
                     in.close();
-                    Gson gson = new Gson();
+//                    Gson gson = new Gson();
+//
+//                    AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
+//
+//                    if (response1.getResponseID() == 0) {
+//                        Type listType = new TypeToken<Set<String>>() {
+//                        }.getType();
+//                        Set<String> users = gson.fromJson(response1.getResponseMessage(), listType);
+//                    }
+//
+//                    Type listType = new TypeToken<ArrayList<String>>(){}.getType();
+//                    ArrayList<String> usersChatUpdated = gson.fromJson(response1.getResponseMessage() , listType);
 
-                    AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
-
-                    if (response1.getResponseID() == 0) {
-                        Type listType = new TypeToken<Set<String>>() {
-                        }.getType();
-                        Set<String> users = gson.fromJson(response1.getResponseMessage(), listType);
-                    }
-
-                    Type listType = new TypeToken<ArrayList<String>>(){}.getType();
-                    ArrayList<String> usersChatUpdated = gson.fromJson(response1.getResponseMessage() , listType);
-
-                    if(usersChatUpdated.size() != 0) {
-
-                        ObservableList<String> arrUsers = usersListView.getItems();
-
-                        usersChatUpdated.forEach(item -> {
-                            if (CurrentUser.currentChat.equals(item)) {
-                                Platform.runLater(() -> {
-                                    try {
-                                        UpdateChatForUser(item);
-                                    } catch (IOException e) {
-                                        // TODO
-                                        e.printStackTrace();
-                                    }
-                                });
-                            }
-                        });
+//                    if(usersChatUpdated.size() != 0) {
+//
+//                        ObservableList<String> arrUsers = usersListView.getItems();
+//
+//                        usersChatUpdated.forEach(item -> {
+//                            if (CurrentUser.currentChat.equals(item)) {
+//                                Platform.runLater(() -> {
+//                                    try {
+//                                        UpdateChatForUser(item);
+//                                    } catch (IOException e) {
+//                                        // TODO
+//                                        e.printStackTrace();
+//                                    }
+//                                });
+//                            }
+//                        });
 
                         // TODO: доделать обновление для других пользователей
-                    }
+                   // }
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
@@ -324,26 +322,26 @@ public class ApplicationControllerImpl implements ApplicationController {
         }
         in.close();
         logger.info("Request was sent");
-        Gson gson = new Gson();
-
-        AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
-
-        Type listType = new TypeToken<ArrayList<Message>>(){}.getType();
-        ArrayList<Message> messages = gson.fromJson(response1.getResponseMessage() , listType);
-
-        chatListView.getItems().clear();
-
-        for(Message msg : messages){
-            DateFormat formatter = new SimpleDateFormat("HH:mm");
-            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-            String dateFormatted = formatter.format(msg.getDate().getTime());
-            chatListView.getItems().add(dateFormatted + " " + msg.getSender() + " : " + msg.getMessage());
-        }
-        chatListView.refresh();
-        CurrentUser.currentChat = login;
-
-        int index = chatListView.getItems().size() - 1;
-        chatListView.scrollTo(index);
+//        Gson gson = new Gson();
+//
+//        AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
+//
+//        Type listType = new TypeToken<ArrayList<Message>>(){}.getType();
+//        ArrayList<Message> messages = gson.fromJson(response1.getResponseMessage() , listType);
+//
+//        chatListView.getItems().clear();
+//
+//        for(Message msg : messages){
+//            DateFormat formatter = new SimpleDateFormat("HH:mm");
+//            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+//            String dateFormatted = formatter.format(msg.getDate().getTime());
+//            chatListView.getItems().add(dateFormatted + " " + msg.getSender() + " : " + msg.getMessage());
+//        }
+//        chatListView.refresh();
+//        CurrentUser.currentChat = login;
+//
+//        int index = chatListView.getItems().size() - 1;
+//        chatListView.scrollTo(index);
     }
 
     @Override
@@ -369,15 +367,15 @@ public class ApplicationControllerImpl implements ApplicationController {
             }
             in.close();
             logger.info("Request was sent");
-            Gson gson = new Gson();
-
-            AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
-
-            Type listType = new TypeToken<Set<String>>(){}.getType();
-            Set<String> currentUsersChat = gson.fromJson(response1.getResponseMessage() , listType);
-            currentUsersChat.remove(CurrentUser.getCurrentUser().getLogin());
-            usersListView.getItems().addAll(currentUsersChat);
-            usersListView.refresh();
+//            Gson gson = new Gson();
+//
+//            AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
+//
+//            Type listType = new TypeToken<Set<String>>(){}.getType();
+//            Set<String> currentUsersChat = gson.fromJson(response1.getResponseMessage() , listType);
+//            currentUsersChat.remove(CurrentUser.getCurrentUser().getLogin());
+//            usersListView.getItems().addAll(currentUsersChat);
+//            usersListView.refresh();
 
     }
 

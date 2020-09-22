@@ -25,7 +25,7 @@ public class ServerArgument {
         Value = value;
     }
 
-    public String ToServerStyleString(){
+    public String toServerStyleString(){
         return getName() + "=" + getValue();
     }
 }

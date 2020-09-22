@@ -1,12 +1,10 @@
 package controller.impl;
 
-import com.google.gson.Gson;
 import controller.LogInController;
 import data.CurrentUser;
 import data.ServerArgument;
 import data.User;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,14 +14,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.springframework.http.ResponseEntity;
 import providers.RequestType;
 import providers.ServerConnectionProvider;
-import serverResponse.AuthorizationResponse;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +39,13 @@ public class LogInControllerImpl implements LogInController {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        loginButton.setOnAction(this::OnLoginClick);
-        signUpButton.setOnAction(this::OnSignUpClick);
+        loginButton.setOnAction(this::onLoginClick);
+        signUpButton.setOnAction(this::onSignUpClick);
     }
 
 
     @FXML
-    private void OnLoginClick(ActionEvent event)
+    private void onLoginClick(ActionEvent event)
     {
         try {
             if(loginField.getText().length() == 0 || passwordField.getText().length() == 0){
@@ -61,32 +56,32 @@ public class LogInControllerImpl implements LogInController {
             argumentsList.add(new ServerArgument("login" , loginField.getText()));
             argumentsList.add(new ServerArgument("password" , passwordField.getText()));
 
-            ResponseEntity answer = ServerConnectionProvider.sendRequest("Login" , argumentsList , RequestType.GET);
+            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
 
-            Gson gson = new Gson();
             User user = new User("" , loginField.getText() , "");
-            AuthorizationResponse response1 = gson.fromJson(answer.toString(), AuthorizationResponse.class);
-            CurrentUser.init(user , response1.getResponseMessage());
+            CurrentUser.init(user , answer.getBody());
 
-            if(response1.getResponseID() == 0) {
-                logger.info("User logined");
+            if(answer != null) {
+                if (answer.getBody() != 0) {
+                    logger.info("User logined");
 
-                //Открываем главное окно
-                Stage applStage = new Stage();
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getResource("/appl.fxml"));
-                Parent root = loader.load();
-                applStage.setScene(new Scene(root, 620, 680));
-                applStage.show();
+                    //Открываем главное окно
+                    Stage applStage = new Stage();
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(getClass().getResource("/appl.fxml"));
+                    Parent root = loader.load();
+                    applStage.setScene(new Scene(root, 620, 680));
+                    applStage.show();
 
-                //Закрываем текущее окно
-                Stage currentStageToClose = (Stage) signUpButton.getScene().getWindow();
-                currentStageToClose.close();
-            }else {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setContentText("Wrong login or password");
-                alert.show();
+                    //Закрываем текущее окно
+                    Stage currentStageToClose = (Stage) signUpButton.getScene().getWindow();
+                    currentStageToClose.close();
+                    return;
+                }
             }
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("Wrong login or password");
+            alert.show();
 
         } catch (Exception e) {
             logger.info(e.getMessage());
@@ -96,7 +91,7 @@ public class LogInControllerImpl implements LogInController {
 
 
     @FXML
-    private void OnSignUpClick(ActionEvent event){
+    private void onSignUpClick(ActionEvent event){
         Stage signUp = new Stage();
         Parent signUpSceneRoot = null;
         try {
