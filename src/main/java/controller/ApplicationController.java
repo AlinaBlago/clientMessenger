@@ -22,7 +22,7 @@ public interface ApplicationController extends Initializable {
 
     void bindThreadCheckNewMessages();
 
-    void UpdateChatForUser(String login) throws IOException;
+    void updateChatForUser(String login) throws IOException;
 
     void loadUserChats() throws IOException;
 

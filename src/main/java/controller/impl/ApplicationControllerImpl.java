@@ -2,6 +2,7 @@ package controller.impl;
 
 import controller.ApplicationController;
 import data.CurrentUser;
+import data.ServerArgument;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -11,6 +12,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.springframework.http.ResponseEntity;
+import providers.RequestType;
+import providers.ServerConnectionProvider;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +23,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 
@@ -74,7 +80,7 @@ public class ApplicationControllerImpl implements ApplicationController {
     @Override
     public void usersListViewChanged(ObservableValue<? extends String> observable, String oldValue, String newValue) {
         try {
-            UpdateChatForUser(newValue);
+            updateChatForUser(newValue);
         } catch (IOException e) {
           //  TODO
             e.printStackTrace();
@@ -84,7 +90,7 @@ public class ApplicationControllerImpl implements ApplicationController {
     @FXML
     @Override
     public void send(ActionEvent event) {
-        if (usersListView.getSelectionModel().isEmpty() == true){
+        if (usersListView.getSelectionModel().isEmpty()){
             logger.info("Send function call: user is empty");
             return;
         }
@@ -106,42 +112,25 @@ public class ApplicationControllerImpl implements ApplicationController {
                 } else {
                     try {
                         logger.info("Staring send 'sendMessage' to server");
-                        StringBuffer url = new StringBuffer();
-                        url.append("http://localhost:8080/sendMessage?senderLogin=");
-                        url.append(CurrentUser.getCurrentUser().getLogin());
-                        url.append("&senderKey=");
-                        url.append(CurrentUser.getCurrentKey());
-                        url.append("&receiverLogin=");
-                        url.append(usersListView.getSelectionModel().getSelectedItem());
-                        url.append("&message=");
+
+                        List<ServerArgument> argumentsList = new ArrayList<>();
+                        argumentsList.add(new ServerArgument("login" , CurrentUser.getCurrentUser().getLogin()));
+                        argumentsList.add(new ServerArgument("password" , usersListView.getSelectionModel().getSelectedItem()));
+
+                        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
                         String mesg = sendMessageField.getText().replaceAll(" " , "%20");
-                        url.append(mesg);
-
-                        URL obj = new URL(url.toString());
-                        HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-
-                        connection.setRequestMethod("GET");
-
-                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                        String inputLine;
-                        StringBuffer response = new StringBuffer();
 
                         logger.info("Request 'sendMessage' sent" );
-
-                        while ((inputLine = in.readLine()) != null) {
-                            response.append(inputLine);
-                        }
-                        in.close();
 
                         DateFormat formatter = new SimpleDateFormat("HH:mm");
                         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
                         String dateFormatted = formatter.format(System.currentTimeMillis());
-                        chatListView.getItems().add(dateFormatted + " " + CurrentUser.getCurrentUser().getLogin() + " : " + sendMessageField.getText());
+                        chatListView.getItems().add(dateFormatted + " " + CurrentUser.getCurrentUser().getLogin() + ": " + sendMessageField.getText());
 
                         int index = chatListView.getItems().size() - 1;
                         chatListView.scrollTo(index);
 
-                        sendMessageField.setText("");
+                        sendMessageField.clear();
 
                     } catch (Exception e){
                         logger.warn(e.getMessage());
@@ -150,7 +139,7 @@ public class ApplicationControllerImpl implements ApplicationController {
 
                 }
 
-            }else {
+            } else {
                 return;
             }
             logger.info("Entered message text less than 0 symbols");
@@ -289,7 +278,7 @@ public class ApplicationControllerImpl implements ApplicationController {
     }
 
     @Override
-    public void UpdateChatForUser(String login) throws IOException {
+    public void updateChatForUser(String login) throws IOException {
         logger.info("Sending 'updateChatForUser' request to server");
         StringBuffer url = new StringBuffer();
         url.append("http://localhost:8080/getChat?senderLogin=");
