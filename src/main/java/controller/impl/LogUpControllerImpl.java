@@ -1,17 +1,21 @@
 package controller.impl;
 
 import controller.LogUpController;
+import data.ServerArgument;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import org.springframework.http.ResponseEntity;
+import providers.RequestType;
+import providers.ServerConnectionProvider;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class LogUpControllerImpl implements LogUpController {
@@ -33,11 +37,11 @@ public class LogUpControllerImpl implements LogUpController {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        signUpButton.setOnAction(this::setSignUpClick);
+        signUpButton.setOnAction(this::onSignUpClick);
     }
 
     @FXML
-    public void setSignUpClick(ActionEvent event){
+    public void onSignUpClick(ActionEvent event){
         try {
             try {
                 if (nameField.getText().length() < 1)
@@ -58,61 +62,39 @@ public class LogUpControllerImpl implements LogUpController {
                 return;
             }
 
-            logger.info("request sign up sending");
-            StringBuffer url = new StringBuffer();
-            url.append("http://localhost:8080/SignUp?name=");
-            url.append(nameField.getText());
-            url.append("&login=");
-            url.append(loginField.getText());
-            url.append("&password=");
-            url.append(passwordField.getText());
-            URL obj = new URL(url.toString());
+            logger.info("Request sign up sending");
 
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            List<ServerArgument> argumentsList = new ArrayList<>();
+            argumentsList.add(new ServerArgument("login" , loginField.getText()));
+            argumentsList.add(new ServerArgument("password" , passwordField.getText()));
 
-            connection.setRequestMethod("GET");
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-            String inputLine = null;
-            StringBuffer response = new StringBuffer();
-
-            while (true) {
-                if (!((inputLine = in.readLine()) != null)) break;
-                response.append(inputLine);
-            }
-
-            in.close();
-
+            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
 
             logger.info("Request was sent");
 
-//            Gson gson = new Gson();
-//
-//            AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
-//            if (response1.getResponseID() == 0) {
-//                logger.info("Registration successful");
-//                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//                alert.setTitle("Answer");
-//                alert.setHeaderText("Results:");
-//                alert.setContentText(response1.getResponseMessage());
-//                alert.show();
-//                Stage stage = (Stage) signUpButton.getScene().getWindow();
-//                stage.close();
-//                return;
-//            }
-//            if (response1.getResponseID() == 2) {
-//                logger.warn("Registration failed");
-//                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//                alert.setTitle(response1.getResponseMessage());
-//                alert.setHeaderText("Results:");
-//                alert.setContentText("Такой пользователь уже существует");
-//                alert.show();
-//                loginField.setText("");
-//                nameField.setText("");
-//                passwordField.setText("");
-//                repeatPasswordField.setText("");
- //           }
+            if (answer.getBody() == 0) {
+                logger.info("Registration successful");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Answer");
+                alert.setHeaderText("Results:");
+                alert.setContentText(String.valueOf(answer.getStatusCode()));
+                alert.show();
+                Stage stage = (Stage) signUpButton.getScene().getWindow();
+                stage.close();
+                return;
+            }
+            if (answer.getBody() == 2) {
+                logger.warn("Registration failed");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(String.valueOf(answer.getStatusCode()));
+                alert.setHeaderText("Results:");
+                alert.setContentText("Такой пользователь уже существует");
+                alert.show();
+                loginField.setText("");
+                nameField.setText("");
+                passwordField.setText("");
+                repeatPasswordField.setText("");
+            }
         } catch (Exception e) {
             // TODO
         }
