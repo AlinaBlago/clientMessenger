@@ -155,42 +155,24 @@ public class ApplicationControllerImpl implements ApplicationController {
 
         try {
             logger.info("Start send 'findUser' to server");
-            StringBuffer url = new StringBuffer();
-            url.append("http://localhost:8080/isUserExists?senderLogin=");
-            url.append(CurrentUser.getCurrentUser().getLogin());
-            url.append("&senderKey=");
-            url.append(CurrentUser.getCurrentKey());
-            url.append("&findUserLogin=");
-            url.append(findUserLogin.getText());
 
-            URL obj = new URL(url.toString());
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            List<ServerArgument> argumentsList = new ArrayList<>();
+            argumentsList.add(new ServerArgument("login" , CurrentUser.getCurrentUser().getLogin()));
+            argumentsList.add(new ServerArgument("password" , findUserLogin.getText()));
 
-            connection.setRequestMethod("GET");
+            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
+            logger.info("Request sended");
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
+            if(answer.getBody() == 0){
+                logger.info("Response 0 from server");
+                usersListView.getItems().add(findUserLogin.getText());
+                usersListView.refresh();
+            } else {
+                logger.warn("Response not 0 from server: " + answer.getStatusCode());
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText("User not found");
+                alert.show();
             }
-            in.close();
-            logger.info("request sended");
-//            Gson gson = new Gson();
-//
-//            AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
-
-//            if(response1.getResponseID() == 0){
-//                logger.info("Response 0 from server");
-//                usersListView.getItems().add(findUserLogin.getText());
-//                usersListView.refresh();
-//            }else {
-//                logger.warn("Response not 0 from server : " + response1.getResponseMessage());
-//                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//                alert.setContentText("User not found");
-//                alert.show();
-            //}
         } catch (Exception e){
             logger.warn(e.getMessage());
             System.out.println(e.getMessage());
