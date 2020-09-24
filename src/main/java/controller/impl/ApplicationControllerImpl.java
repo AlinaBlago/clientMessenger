@@ -284,35 +284,22 @@ public class ApplicationControllerImpl implements ApplicationController {
     @Override
     public void loadUserChats () throws IOException {
             logger.info("Request 'loaduserchat' configuration");
-            StringBuffer url = new StringBuffer();
-            url.append("http://localhost:8080/GetUserChats?login=");
-            url.append(CurrentUser.getCurrentUser().getLogin());
-            url.append("&key=");
-            url.append(CurrentUser.getCurrentKey());
 
-            URL obj = new URL(url.toString());
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            List<ServerArgument> argumentsList = new ArrayList<>();
+            argumentsList.add(new ServerArgument("login", CurrentUser.getCurrentUser().getLogin()));
 
-            connection.setRequestMethod("GET");
+            //TODO
+            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
             logger.info("Request was sent");
-//            Gson gson = new Gson();
-//
-//            AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
-//
-//            Type listType = new TypeToken<Set<String>>(){}.getType();
-//            Set<String> currentUsersChat = gson.fromJson(response1.getResponseMessage() , listType);
-//            currentUsersChat.remove(CurrentUser.getCurrentUser().getLogin());
-//            usersListView.getItems().addAll(currentUsersChat);
-//            usersListView.refresh();
+            Gson gson = new Gson();
+
+            //TODO
+            Type listType = new TypeToken<Set<String>>(){}.getType();
+            Set<String> currentUsersChat = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
+            currentUsersChat.remove(CurrentUser.getCurrentUser().getLogin());
+            usersListView.getItems().addAll(currentUsersChat);
+            usersListView.refresh();
 
     }
 
