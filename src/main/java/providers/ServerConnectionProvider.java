@@ -2,6 +2,8 @@ package providers;
 
 import data.ServerArgument;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -26,10 +28,12 @@ public class ServerConnectionProvider {
 
             String url = createURL(serverURL, serverFunction, arguments);
 
-            RestTemplate template = new RestTemplate();
+          //  RestTemplate template = new RestTemplate();
+            ClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+            RestTemplate restTemplate = new RestTemplate(factory);
             ResponseEntity<Integer> result = null;
             try{
-                result = template.getForEntity(url, Integer.class );
+                result = restTemplate.getForEntity(url, Integer.class );
             } catch (Exception e){
                 //TODO : logger
                e.printStackTrace();
