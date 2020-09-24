@@ -62,14 +62,13 @@ public class LogUpControllerImpl implements LogUpController {
                 alert.show();
                 return;
             }
-
             logger.info("Request sign up sending");
-
             List<ServerArgument> argumentsList = new ArrayList<>();
+            argumentsList.add(new ServerArgument("name" , nameField.getText()));
             argumentsList.add(new ServerArgument("login" , loginField.getText()));
             argumentsList.add(new ServerArgument("password" , passwordField.getText()));
 
-            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
+            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("signUp", argumentsList, RequestType.GET);
 
             logger.info("Request was sent");
 
@@ -97,7 +96,7 @@ public class LogUpControllerImpl implements LogUpController {
                 repeatPasswordField.setText("");
             }
         } catch (Exception e) {
-            // TODO
+            logger.warn("Button 'signUp' doesn't work");
         }
     }
 

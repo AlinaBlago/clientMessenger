@@ -85,8 +85,8 @@ public class ApplicationControllerImpl implements ApplicationController {
         try {
             updateChatForUser(newValue);
         } catch (IOException e) {
-          //  TODO
-            e.printStackTrace();
+          logger.info("Chat doesn't update for user.");
+          e.printStackTrace();
         }
     }
 
@@ -108,7 +108,6 @@ public class ApplicationControllerImpl implements ApplicationController {
                         break;
                     }
                 }
-
                 if(isExistsOnlyOfSpace){
                     logger.info("Entered message text consist only of space");
                     return;
@@ -117,11 +116,12 @@ public class ApplicationControllerImpl implements ApplicationController {
                         logger.info("Staring send 'sendMessage' to server");
 
                         List<ServerArgument> argumentsList = new ArrayList<>();
-                        argumentsList.add(new ServerArgument("login" , CurrentUser.getCurrentUser().getLogin()));
-                        argumentsList.add(new ServerArgument("password" , usersListView.getSelectionModel().getSelectedItem()));
+                        argumentsList.add(new ServerArgument("senderLogin", CurrentUser.getCurrentUser().getLogin()));
+                        argumentsList.add(new ServerArgument("receiverLogin", usersListView.getSelectionModel().getSelectedItem()));
+                        argumentsList.add(new ServerArgument("message", sendMessageField.getText().replaceAll(" " , "%20")));
 
-                        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
-                        String mesg = sendMessageField.getText().replaceAll(" " , "%20");
+                        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("sendMessage", argumentsList, RequestType.GET);
+                        String mesg = sendMessageField.getText().replaceAll(" ", "%20");
 
                         logger.info("Request 'sendMessage' sent" );
 
@@ -139,9 +139,7 @@ public class ApplicationControllerImpl implements ApplicationController {
                         logger.warn(e.getMessage());
                         System.out.println(e.getMessage());
                     }
-
                 }
-
             } else {
                 return;
             }
@@ -160,11 +158,11 @@ public class ApplicationControllerImpl implements ApplicationController {
             logger.info("Start send 'findUser' to server");
 
             List<ServerArgument> argumentsList = new ArrayList<>();
-            argumentsList.add(new ServerArgument("login" , CurrentUser.getCurrentUser().getLogin()));
-            argumentsList.add(new ServerArgument("password" , findUserLogin.getText()));
+            argumentsList.add(new ServerArgument("senderLogin", CurrentUser.getCurrentUser().getLogin()));
+            argumentsList.add(new ServerArgument("findUserLogin", findUserLogin.getText()));
 
-            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
-            logger.info("Request sended");
+            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("isUserExist", argumentsList, RequestType.GET);
+            logger.info("Request sent");
 
             if(answer.getBody() == 0){
                 logger.info("Response 0 from server");
@@ -195,9 +193,9 @@ public class ApplicationControllerImpl implements ApplicationController {
             protected Void call() throws IOException {
                 do {
                     List<ServerArgument> argumentsList = new ArrayList<>();
-                    argumentsList.add(new ServerArgument("login", CurrentUser.getCurrentUser().getLogin()));
+                    argumentsList.add(new ServerArgument("senderLogin", CurrentUser.getCurrentUser().getLogin()));
 
-                    ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
+                    ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("haveNewMessages", argumentsList, RequestType.GET);
 
                     Gson gson = new Gson();
 
@@ -222,7 +220,7 @@ public class ApplicationControllerImpl implements ApplicationController {
                                     try {
                                         updateChatForUser(item);
                                     } catch (IOException e) {
-                                        // TODO
+                                        logger.warn("Chat doesn't update");
                                         e.printStackTrace();
                                     }
                                 });
@@ -234,16 +232,14 @@ public class ApplicationControllerImpl implements ApplicationController {
                         try {
                             Thread.sleep(2000);
                         } catch (InterruptedException e) {
-                            // TODO
+                            logger.warn("Error in Thread");
                             e.printStackTrace();
                         }
 
                 } while(true) ;
             }
         };
-
         logger.info("Thread bound");
-
         CurrentUser.ourThread = new Thread(task);
         CurrentUser.ourThread.start();
         logger.info("Thread started");
@@ -254,10 +250,10 @@ public class ApplicationControllerImpl implements ApplicationController {
         logger.info("Sending 'updateChatForUser' request to server");
 
         List<ServerArgument> argumentsList = new ArrayList<>();
-        argumentsList.add(new ServerArgument("login" , CurrentUser.getCurrentUser().getLogin()));
+        argumentsList.add(new ServerArgument("senderLogin" , CurrentUser.getCurrentUser().getLogin()));
         argumentsList.add(new ServerArgument("companionLogin", login));
 
-        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
+        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("getChat", argumentsList, RequestType.GET);
 
         logger.info("Request was sent");
         Gson gson = new Gson();
@@ -288,8 +284,7 @@ public class ApplicationControllerImpl implements ApplicationController {
             List<ServerArgument> argumentsList = new ArrayList<>();
             argumentsList.add(new ServerArgument("login", CurrentUser.getCurrentUser().getLogin()));
 
-            //TODO
-            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
+            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("getUserChats", argumentsList, RequestType.GET);
 
             logger.info("Request was sent");
             Gson gson = new Gson();

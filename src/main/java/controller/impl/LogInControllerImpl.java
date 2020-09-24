@@ -43,10 +43,8 @@ public class LogInControllerImpl implements LogInController {
         signUpButton.setOnAction(this::onSignUpClick);
     }
 
-
     @FXML
-    private void onLoginClick(ActionEvent event)
-    {
+    private void onLoginClick(ActionEvent event) {
         try {
             if(loginField.getText().length() == 0 || passwordField.getText().length() == 0){
                 return;
@@ -63,7 +61,7 @@ public class LogInControllerImpl implements LogInController {
 
             if(answer != null) {
                 if (answer.getBody() != 0) {
-                    logger.info("User logined");
+                    logger.info("User is logged in");
 
                     //Открываем главное окно
                     Stage applStage = new Stage();
@@ -88,7 +86,6 @@ public class LogInControllerImpl implements LogInController {
             System.out.println(e.getMessage());
         }
     }
-
 
     @FXML
     private void onSignUpClick(ActionEvent event){
