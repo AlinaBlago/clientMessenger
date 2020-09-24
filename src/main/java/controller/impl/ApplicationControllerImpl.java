@@ -16,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import massage.Message;
 import org.springframework.http.ResponseEntity;
 import providers.RequestType;
 import providers.ServerConnectionProvider;
@@ -251,48 +252,33 @@ public class ApplicationControllerImpl implements ApplicationController {
     @Override
     public void updateChatForUser(String login) throws IOException {
         logger.info("Sending 'updateChatForUser' request to server");
-        StringBuffer url = new StringBuffer();
-        url.append("http://localhost:8080/getChat?senderLogin=");
-        url.append(CurrentUser.getCurrentUser().getLogin());
-        url.append("&senderKey=");
-        url.append(CurrentUser.getCurrentKey());
-        url.append("&companionLogin=");
-        url.append(login);
 
-        URL obj = new URL(url.toString());
-        HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+        List<ServerArgument> argumentsList = new ArrayList<>();
+        argumentsList.add(new ServerArgument("login" , CurrentUser.getCurrentUser().getLogin()));
+        argumentsList.add(new ServerArgument("companionLogin", login));
 
-        connection.setRequestMethod("GET");
+        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
         logger.info("Request was sent");
-//        Gson gson = new Gson();
-//
-//        AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
-//
-//        Type listType = new TypeToken<ArrayList<Message>>(){}.getType();
-//        ArrayList<Message> messages = gson.fromJson(response1.getResponseMessage() , listType);
-//
-//        chatListView.getItems().clear();
-//
-//        for(Message msg : messages){
-//            DateFormat formatter = new SimpleDateFormat("HH:mm");
-//            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-//            String dateFormatted = formatter.format(msg.getDate().getTime());
-//            chatListView.getItems().add(dateFormatted + " " + msg.getSender() + " : " + msg.getMessage());
-//        }
-//        chatListView.refresh();
-//        CurrentUser.currentChat = login;
-//
-//        int index = chatListView.getItems().size() - 1;
-//        chatListView.scrollTo(index);
+        Gson gson = new Gson();
+
+        //TODO
+        Type listType = new TypeToken<ArrayList<Message>>(){}.getType();
+        ArrayList<Message> messages = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
+
+        chatListView.getItems().clear();
+
+        for(Message msg : messages){
+            DateFormat formatter = new SimpleDateFormat("HH:mm");
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            String dateFormatted = formatter.format(msg.getDate().getTime());
+            chatListView.getItems().add(dateFormatted + " " + msg.getSender() + " : " + msg.getMessage());
+        }
+        chatListView.refresh();
+        CurrentUser.currentChat = login;
+
+        int index = chatListView.getItems().size() - 1;
+        chatListView.scrollTo(index);
     }
 
     @Override
