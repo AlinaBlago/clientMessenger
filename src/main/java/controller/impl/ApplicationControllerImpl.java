@@ -1,9 +1,13 @@
 package controller.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import controller.ApplicationController;
 import data.CurrentUser;
 import data.ServerArgument;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,14 +23,12 @@ import providers.ServerConnectionProvider;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
+import java.util.*;
 
 public class ApplicationControllerImpl implements ApplicationController {
 
@@ -191,64 +193,51 @@ public class ApplicationControllerImpl implements ApplicationController {
             @Override
             protected Void call() throws IOException {
                 do {
-                    StringBuffer url = new StringBuffer();
-                    url.append("http://localhost:8080/haveNewMessages?senderLogin=");
-                    url.append(CurrentUser.getCurrentUser().getLogin());
-                    url.append("&senderKey=");
-                    url.append(CurrentUser.getCurrentKey());
+                    List<ServerArgument> argumentsList = new ArrayList<>();
+                    argumentsList.add(new ServerArgument("login", CurrentUser.getCurrentUser().getLogin()));
 
-                    URL obj = new URL(url.toString());
-                    HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+                    ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
 
-                    connection.setRequestMethod("GET");
+                    Gson gson = new Gson();
 
-                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    String inputLine;
-                    StringBuffer response = new StringBuffer();
-
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
+                    if (answer.getBody() == 0) {
+                        Type listType = new TypeToken<Set<String>>() {
+                        }.getType();
+                        //TODO
+                        Set<String> users = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
                     }
-                    in.close();
-//                    Gson gson = new Gson();
-//
-//                    AuthorizationResponse response1 = gson.fromJson(response.toString(), AuthorizationResponse.class);
-//
-//                    if (response1.getResponseID() == 0) {
-//                        Type listType = new TypeToken<Set<String>>() {
-//                        }.getType();
-//                        Set<String> users = gson.fromJson(response1.getResponseMessage(), listType);
-//                    }
-//
-//                    Type listType = new TypeToken<ArrayList<String>>(){}.getType();
-//                    ArrayList<String> usersChatUpdated = gson.fromJson(response1.getResponseMessage() , listType);
 
-//                    if(usersChatUpdated.size() != 0) {
-//
-//                        ObservableList<String> arrUsers = usersListView.getItems();
-//
-//                        usersChatUpdated.forEach(item -> {
-//                            if (CurrentUser.currentChat.equals(item)) {
-//                                Platform.runLater(() -> {
-//                                    try {
-//                                        UpdateChatForUser(item);
-//                                    } catch (IOException e) {
-//                                        // TODO
-//                                        e.printStackTrace();
-//                                    }
-//                                });
-//                            }
-//                        });
+                    Type listType = new TypeToken<ArrayList<String>>() {
+                    }.getType();
+                    //TODO
+                    ArrayList<String> usersChatUpdated = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
 
+                    if (usersChatUpdated.size() != 0) {
+                        ObservableList<String> arrUsers = usersListView.getItems();
+
+                        usersChatUpdated.forEach(item -> {
+                            if (CurrentUser.currentChat.equals(item)) {
+                                Platform.runLater(() -> {
+                                    try {
+                                        updateChatForUser(item);
+                                    } catch (IOException e) {
+                                        // TODO
+                                        e.printStackTrace();
+                                    }
+                                });
+                            }
+                        });
+                    }
                         // TODO: доделать обновление для других пользователей
-                   // }
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        // TODO
-                        e.printStackTrace();
-                    }
-                }while(true);
+
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            // TODO
+                            e.printStackTrace();
+                        }
+
+                } while(true) ;
             }
         };
 
