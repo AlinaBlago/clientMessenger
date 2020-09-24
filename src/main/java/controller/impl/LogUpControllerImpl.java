@@ -40,6 +40,7 @@ public class LogUpControllerImpl implements LogUpController {
         signUpButton.setOnAction(this::onSignUpClick);
     }
 
+    @Override
     @FXML
     public void onSignUpClick(ActionEvent event){
         try {
