@@ -308,6 +308,7 @@ public class ApplicationControllerImpl implements ApplicationController {
     public void logOut(ActionEvent event) {
         logger.info("Logout command");
         CurrentUser.logOut();
+        //TODO
         CurrentUser.ourThread.stop();
         logger.info("Thread was stopped");
 
