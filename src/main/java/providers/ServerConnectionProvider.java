@@ -1,6 +1,7 @@
 package providers;
 
 import data.ServerArgument;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -23,15 +24,15 @@ public class ServerConnectionProvider {
 
     private ServerConnectionProvider(){}
 
-    public ResponseEntity<Integer> loginRequest(String serverFunction, List<ServerArgument> arguments, RequestType type) throws IOException {
+    public ResponseEntity loginRequest(String serverFunction, List<ServerArgument> arguments, RequestType type) throws IOException {
         if(!serverURL.isBlank()) {
             String url = createURL(serverURL, serverFunction, arguments);
           //  RestTemplate template = new RestTemplate();
             ClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
             RestTemplate restTemplate = new RestTemplate(factory);
-            ResponseEntity<Integer> result = null;
+            ResponseEntity result = null;
             try{
-                result = restTemplate.getForEntity(url, Integer.class);
+                result = restTemplate.getForEntity(url, HttpStatus.class);
             } catch (Exception e){
                 //TODO : logger
                e.printStackTrace();

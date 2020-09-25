@@ -74,7 +74,7 @@ public class LogUpControllerImpl implements LogUpController {
 
             logger.info("Request was sent");
 
-            if (Objects.equals(answer.getBody(), 0)) {
+            if (Objects.equals(answer.getStatusCode(), HttpStatus.CREATED)) {
                 logger.info("Registration successful");
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Answer");
@@ -85,7 +85,7 @@ public class LogUpControllerImpl implements LogUpController {
                 stage.close();
                 return;
             }
-            if (Objects.equals(answer.getBody(), 1)) {
+            if (Objects.equals(answer.getStatusCode(), HttpStatus.OK)) {
                 logger.warn("Registration failed");
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(String.valueOf(answer.getStatusCode()));

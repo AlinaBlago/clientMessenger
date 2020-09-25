@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import providers.RequestType;
 import providers.ServerConnectionProvider;
@@ -55,18 +56,18 @@ public class LogInControllerImpl implements LogInController {
             argumentsList.add(new ServerArgument("login" , loginField.getText()));
             argumentsList.add(new ServerArgument("password" , passwordField.getText()));
 
-            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
+            ResponseEntity answer = ServerConnectionProvider.getInstance().loginRequest("application", argumentsList, RequestType.POST);
 
-            User user = new User("" , loginField.getText() , passwordField.getText());
-            CurrentUser.init(user, answer.getBody());
+            User user = new User(loginField.getText(), passwordField.getText());
+            CurrentUser.init(user);
 
-            if (Objects.equals(answer.getBody(), 0)) {
+            if (Objects.equals(answer.getStatusCode(), HttpStatus.FOUND)) {
                 logger.info("User is logged in");
 
                 //Открываем главное окно
                 Stage applStage = new Stage();
                 FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getResource("/appl.fxml"));
+                loader.setLocation(getClass().getResource("/application.fxml"));
                 Parent root = loader.load();
                 applStage.setScene(new Scene(root, 620, 680));
                 applStage.show();

@@ -3,16 +3,21 @@ package data;
 public class User {
     private static int NextID;
     private int ID;
-    private String Name;
-    private String Login;
-    private String Password;
+    private String name;
+    private String login;
+    private String password;
     private boolean isBanned;
 
     public User(String name, String login, String password) {
-        Name = name;
-        Login = login;
-        Password = password;
+        this.name = name;
+        this.login = login;
+        this.password = password;
         this.isBanned = false;
+    }
+
+    public User(String login, String password){
+        this.login = login;
+        this.password = password;
     }
 
     public static int getNextID() {
@@ -33,27 +38,27 @@ public class User {
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public String getLogin() {
-        return Login;
+        return login;
     }
 
     public void setLogin(String login) {
-        Login = login;
+        this.login = login;
     }
 
     public String getPassword() {
-        return Password;
+        return password;
     }
 
     public void setPassword(String password) {
-        Password = password;
+        this.password = password;
     }
 
     public boolean isBanned() {

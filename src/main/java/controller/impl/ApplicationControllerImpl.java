@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import massage.Message;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import providers.RequestType;
 import providers.ServerConnectionProvider;
@@ -164,7 +165,7 @@ public class ApplicationControllerImpl implements ApplicationController {
             ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("isUserExist", argumentsList, RequestType.GET);
             logger.info("Request sent");
 
-            if(answer.getBody() == 0){
+            if(Objects.equals(answer.getStatusCode(), HttpStatus.OK)){
                 logger.info("Response 0 from server");
                 usersListView.getItems().add(findUserLogin.getText());
                 usersListView.refresh();
@@ -199,7 +200,7 @@ public class ApplicationControllerImpl implements ApplicationController {
 
                     Gson gson = new Gson();
 
-                    if (answer.getBody() == 0) {
+                    if (Objects.equals(answer.getBody(), 0)) {
                         Type listType = new TypeToken<Set<String>>() {
                         }.getType();
                         //TODO
