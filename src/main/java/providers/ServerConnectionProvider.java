@@ -25,21 +25,18 @@ public class ServerConnectionProvider {
 
     public ResponseEntity<Integer> loginRequest(String serverFunction, List<ServerArgument> arguments, RequestType type) throws IOException {
         if(!serverURL.isBlank()) {
-
             String url = createURL(serverURL, serverFunction, arguments);
-
           //  RestTemplate template = new RestTemplate();
             ClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
             RestTemplate restTemplate = new RestTemplate(factory);
             ResponseEntity<Integer> result = null;
             try{
-                result = restTemplate.getForEntity(url, Integer.class );
+                result = restTemplate.getForEntity(url, Integer.class);
             } catch (Exception e){
                 //TODO : logger
                e.printStackTrace();
             }
             return result;
-
         } else{
             throw new IOException("The server url was not found.");
             //TODO : logger
@@ -47,7 +44,7 @@ public class ServerConnectionProvider {
     }
 
     private String createURL(String serverURL, String serverFunction, List<ServerArgument> arguments){
-        StringBuffer url = new StringBuffer();
+        StringBuilder url = new StringBuilder();
         url.append(ServerConnectionProvider.serverURL);
         url.append("/");
         url.append(serverFunction);
@@ -59,7 +56,6 @@ public class ServerConnectionProvider {
                 url.append("&");
             }
         }
-
         return url.toString();
     }
 

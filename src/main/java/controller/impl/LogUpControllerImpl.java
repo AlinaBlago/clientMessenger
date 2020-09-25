@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import providers.RequestType;
 import providers.ServerConnectionProvider;
@@ -16,6 +17,7 @@ import providers.ServerConnectionProvider;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class LogUpControllerImpl implements LogUpController {
@@ -72,7 +74,7 @@ public class LogUpControllerImpl implements LogUpController {
 
             logger.info("Request was sent");
 
-            if (answer.getBody() == 0) {
+            if (Objects.equals(answer.getBody(), 0)) {
                 logger.info("Registration successful");
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Answer");
@@ -83,7 +85,7 @@ public class LogUpControllerImpl implements LogUpController {
                 stage.close();
                 return;
             }
-            if (answer.getBody() == 2) {
+            if (Objects.equals(answer.getBody(), 1)) {
                 logger.warn("Registration failed");
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(String.valueOf(answer.getStatusCode()));

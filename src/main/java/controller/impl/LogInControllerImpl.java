@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class LogInControllerImpl implements LogInController {
@@ -56,26 +57,24 @@ public class LogInControllerImpl implements LogInController {
 
             ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("login", argumentsList, RequestType.GET);
 
-            User user = new User("" , loginField.getText() , "");
+            User user = new User("" , loginField.getText() , passwordField.getText());
             CurrentUser.init(user, answer.getBody());
 
-            if(answer != null) {
-                if (answer.getBody() != 0) {
-                    logger.info("User is logged in");
+            if (Objects.equals(answer.getBody(), 0)) {
+                logger.info("User is logged in");
 
-                    //Открываем главное окно
-                    Stage applStage = new Stage();
-                    FXMLLoader loader = new FXMLLoader();
-                    loader.setLocation(getClass().getResource("/appl.fxml"));
-                    Parent root = loader.load();
-                    applStage.setScene(new Scene(root, 620, 680));
-                    applStage.show();
+                //Открываем главное окно
+                Stage applStage = new Stage();
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/appl.fxml"));
+                Parent root = loader.load();
+                applStage.setScene(new Scene(root, 620, 680));
+                applStage.show();
 
-                    //Закрываем текущее окно
-                    Stage currentStageToClose = (Stage) signUpButton.getScene().getWindow();
-                    currentStageToClose.close();
-                    return;
-                }
+                //Закрываем текущее окно
+                Stage currentStageToClose = (Stage) signUpButton.getScene().getWindow();
+                currentStageToClose.close();
+                return;
             }
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("Wrong login or password");
