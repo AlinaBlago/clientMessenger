@@ -6,6 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
+import request.LoginRequest;
+import request.SignupRequest;
+import response.LoginResponse;
+import response.SignupResponse;
 
 import java.io.IOException;
 
@@ -58,6 +62,18 @@ public class ServerConnectionProvider {
             }
         }
         return url.toString();
+    }
+
+    public ResponseEntity<SignupResponse> signUpRequest(SignupRequest requestEntity){
+        var url = serverURL + "signUp";
+        RestTemplate restTempl = new RestTemplate();
+        return restTempl.postForEntity(url, requestEntity, SignupResponse.class);
+    }
+
+    public ResponseEntity<LoginResponse> loginRequest(LoginRequest requestEntity){
+        var url = serverURL + "login";
+        RestTemplate restTempl = new RestTemplate();
+        return restTempl.postForEntity(url, requestEntity, LoginResponse.class);
     }
 
 }

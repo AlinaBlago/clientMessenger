@@ -53,7 +53,7 @@ public class ApplicationControllerImpl implements ApplicationController {
     TextField sendMessageField;
 
     @FXML
-    TextField findUserLogin;
+   TextField findUserLogin;
 
     @FXML
     Button findUserButton;
@@ -121,7 +121,7 @@ public class ApplicationControllerImpl implements ApplicationController {
                         argumentsList.add(new ServerArgument("receiverLogin", usersListView.getSelectionModel().getSelectedItem()));
                         argumentsList.add(new ServerArgument("message", sendMessageField.getText().replaceAll(" " , "%20")));
 
-                        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("sendMessage", argumentsList, RequestType.GET);
+                        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("sendMessage" ,argumentsList, RequestType.GET);
                         String mesg = sendMessageField.getText().replaceAll(" ", "%20");
 
                         logger.info("Request 'sendMessage' sent" );

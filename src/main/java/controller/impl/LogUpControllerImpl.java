@@ -2,6 +2,7 @@ package controller.impl;
 
 import controller.LogUpController;
 import data.ServerArgument;
+import exceptions.ValidationException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -11,8 +12,11 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import providers.DialogProvider;
 import providers.RequestType;
 import providers.ServerConnectionProvider;
+import request.SignupRequest;
+import response.SignupResponse;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -47,59 +51,37 @@ public class LogUpControllerImpl implements LogUpController {
     public void onSignUpClick(ActionEvent event){
         try {
             try {
-                if (nameField.getText().length() < 1)
-                    throw new Exception("Please enter name more than 1 symbol!");
-                if (loginField.getText().length() < 2)
-                    throw new Exception("Please enter login more than 2 symbols!");
-                if (passwordField.getText().length() < 4)
-                    throw new Exception("Password cannot be less than 4 symbols!");
-                if (!passwordField.getText().equals(repeatPasswordField.getText()))
-                    throw new Exception("Passwords are not equal!");
-            } catch (Exception e) {
+                validateSignUpFields();
+            } catch (ValidationException e) {
                 logger.warn(e.getMessage());
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("WARNING");
-                alert.setHeaderText("Wrong data");
-                alert.setContentText(e.getMessage());
-                alert.show();
+                DialogProvider.ShowDialog(e.GetPropertyName() , e.GetPropertyError());
                 return;
             }
             logger.info("Request sign up sending");
-            List<ServerArgument> argumentsList = new ArrayList<>();
-            argumentsList.add(new ServerArgument("name" , nameField.getText()));
-            argumentsList.add(new ServerArgument("login" , loginField.getText()));
-            argumentsList.add(new ServerArgument("password" , passwordField.getText()));
-
-            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("signUp", argumentsList, RequestType.GET);
-
+            SignupRequest requestBody = new SignupRequest(nameField.getText() , loginField.getText() , passwordField.getText());
+            ResponseEntity<SignupResponse> answer = ServerConnectionProvider.getInstance().signUpRequest(requestBody);
             logger.info("Request was sent");
 
-            if (Objects.equals(answer.getStatusCode(), HttpStatus.CREATED)) {
-                logger.info("Registration successful");
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Answer");
-                alert.setHeaderText("Results:");
-                alert.setContentText(String.valueOf(answer.getStatusCode()));
-                alert.show();
-                Stage stage = (Stage) signUpButton.getScene().getWindow();
-                stage.close();
-                return;
+            if(answer.getStatusCode().is2xxSuccessful() && answer.getBody().isStatus()){
+                DialogProvider.ShowDialog("SUCCESSFUL" , "New user created");
+            }else{
+                DialogProvider.ShowDialog("ERROR" , "Something went wrong" , Alert.AlertType.ERROR);
             }
-            if (Objects.equals(answer.getStatusCode(), HttpStatus.OK)) {
-                logger.warn("Registration failed");
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(String.valueOf(answer.getStatusCode()));
-                alert.setHeaderText("Results:");
-                alert.setContentText("Такой пользователь уже существует");
-                alert.show();
-                loginField.setText("");
-                nameField.setText("");
-                passwordField.setText("");
-                repeatPasswordField.setText("");
-            }
+
         } catch (Exception e) {
-            logger.warn("Button 'signUp' doesn't work");
+            logger.warn(e.getMessage());
         }
+    }
+
+    private void validateSignUpFields() throws ValidationException {
+        if (nameField.getText().length() < 1)
+            throw new ValidationException("" , "Name" , "enter name more than 1 symbol!");
+        if (loginField.getText().length() < 2)
+            throw new ValidationException("" , "login" , "enter name more than 2 symbol!");
+        if (passwordField.getText().length() < 4)
+            throw new ValidationException("" , "Password" , "cannot be less than 4 symbols!");
+        if (!passwordField.getText().equals(repeatPasswordField.getText()))
+            throw new ValidationException("" , "Password" , "password must be equal!");
     }
 
 }
