@@ -56,7 +56,7 @@ public class LogInControllerImpl implements LogInController {
             argumentsList.add(new ServerArgument("login" , loginField.getText()));
             argumentsList.add(new ServerArgument("password" , passwordField.getText()));
 
-            ResponseEntity answer = ServerConnectionProvider.getInstance().loginRequest("application", argumentsList, RequestType.POST);
+            ResponseEntity answer = ServerConnectionProvider.getInstance().loginRequest("application", loginField.getText() , passwordField.getText(), RequestType.POST);
 
             User user = new User(loginField.getText(), passwordField.getText());
             CurrentUser.init(user);
