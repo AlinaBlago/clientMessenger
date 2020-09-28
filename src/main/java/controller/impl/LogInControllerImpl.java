@@ -39,10 +39,14 @@ public class LogInControllerImpl implements LogInController {
     @FXML
     PasswordField passwordField;
 
+    @FXML
+    Button changePasswordButton;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loginButton.setOnAction(this::onLoginClick);
         signUpButton.setOnAction(this::onSignUpClick);
+        changePasswordButton.setOnAction(this::onChangePasswordClick);
     }
 
     @FXML
@@ -98,5 +102,19 @@ public class LogInControllerImpl implements LogInController {
         }
         signUp.setScene(new Scene(signUpSceneRoot, 620, 680));
         signUp.show();
+    }
+
+    @FXML
+    private void onChangePasswordClick(ActionEvent event){
+
+        Stage changePassword = new Stage();
+        Parent changePasswordSceneRoot = null;
+        try {
+            changePasswordSceneRoot = FXMLLoader.load(LogInControllerImpl.this.getClass().getResource("/changePassword.fxml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        changePassword.setScene(new Scene(changePasswordSceneRoot, 620, 680));
+        changePassword.show();
     }
 }
