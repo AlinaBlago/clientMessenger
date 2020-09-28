@@ -3,11 +3,20 @@ package request;
 public class SignupRequest {
     private String name;
     private String login;
+import javax.validation.constraints.NotBlank;
+
+public class SignupRequest {
+    @NotBlank
+    private String name;
+    @NotBlank
+    private String login;
+    @NotBlank
     private String password;
 
     public SignupRequest() {}
 
     public SignupRequest( String name,  String login,  String password) {
+    public SignupRequest(@NotBlank String name, @NotBlank String login, @NotBlank String password) {
         this.name = name;
         this.login = login;
         this.password = password;
@@ -37,3 +46,4 @@ public class SignupRequest {
         this.password = password;
     }
 }
+

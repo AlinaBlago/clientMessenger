@@ -1,18 +1,19 @@
 package request;
 
-import javax.validation.constraints.NotBlank;
-
-public class LoginRequest {
-    @NotBlank
+public class LoginResponse {
     private String login;
-
-    @NotBlank
     private String password;
 
-    public LoginRequest() {
+    public static LoginResponse fromMessage(LoginResponse response) {
+        return new LoginResponse(
+                response.getLogin(),
+                response.getPassword()
+        );
     }
 
-    public LoginRequest(String login, String password) {
+    LoginResponse() {}
+
+    public LoginResponse(String login, String password) {
         this.login = login;
         this.password = password;
     }
