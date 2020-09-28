@@ -114,7 +114,7 @@ public class LogInControllerImpl implements LogInController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        changePassword.setScene(new Scene(changePasswordSceneRoot, 620, 680));
+        changePassword.setScene(new Scene(changePasswordSceneRoot, 620, 570));
         changePassword.show();
     }
 }
