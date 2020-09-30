@@ -1,6 +1,7 @@
 package controller.impl;
 
 import controller.ChangePasswordController;
+import data.CurrentUser;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +11,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.springframework.http.ResponseEntity;
+import providers.DialogProvider;
+import providers.ServerConnectionProvider;
+import request.SendChangePasswordTokenRequest;
+import request.SignupRequest;
+import response.ChangePasswordResponse;
+import response.SignupResponse;
 
 import java.io.IOException;
 import java.net.URL;
@@ -30,12 +38,32 @@ public class ChangePasswordControllerImpl implements ChangePasswordController {
 
     @FXML
     private void onSubmitClick(ActionEvent event){
-        if (loginField.getText().equals(null)){
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setContentText("Wrong login");
-            alert.show();
+        if (loginField.getText().length() == 0){
+            DialogProvider.ShowDialog("WARNING" , "Wrong Login");
         }
 
+        SendChangePasswordTokenRequest requestBody = new SendChangePasswordTokenRequest(loginField.getText());
+        ResponseEntity<ChangePasswordResponse> answer = ServerConnectionProvider.getInstance().getToken(requestBody);
+        logger.info("Request was sent");
+
+        CurrentUser.setUsername(answer.getBody().getUsername());
+        CurrentUser.setToken(answer.getBody().getToken());
+        System.out.println(CurrentUser.getUsername());
+
+        if(answer.getStatusCode().is2xxSuccessful()){
+        DialogProvider.ShowDialog("Successful" , "Token sent for your mail", Alert.AlertType.INFORMATION);
+
+        openNewWindow();
+
+        Stage currentStageToClose = (Stage) submitButton.getScene().getWindow();
+        currentStageToClose.close();
+        return;
+    }else{
+        DialogProvider.ShowDialog("ERROR" , "Something went wrong" , Alert.AlertType.ERROR);
+    }
+}
+
+    public void openNewWindow(){
         Stage changePassword = new Stage();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/submitChangePassword.fxml"));
@@ -47,9 +75,5 @@ public class ChangePasswordControllerImpl implements ChangePasswordController {
         }
         changePassword.setScene(new Scene(root, 620, 680));
         changePassword.show();
-
-        Stage currentStageToClose = (Stage) submitButton.getScene().getWindow();
-        currentStageToClose.close();
-        return;
     }
 }

@@ -3,27 +3,20 @@ package providers;
 import data.ServerArgument;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.*;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
-import request.LoginRequest;
-import request.SignupRequest;
+import request.*;
+import response.ChangePasswordResponse;
+import response.JwtResponse;
 import response.LoginResponse;
 import response.SignupResponse;
-import request.LoginRequest;
-import request.SignupRequest;
 
-import java.io.IOException;
-
-import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.List;
 
 
 public class ServerConnectionProvider {
     private static ServerConnectionProvider instance;
 
-    public static final String serverURL = "http://localhost:8080";
+    public static final String serverURL = "http://localhost:8080/";
 
     public static ServerConnectionProvider getInstance() {
         if(instance == null) instance = new ServerConnectionProvider();
@@ -31,48 +24,6 @@ public class ServerConnectionProvider {
     }
 
     private ServerConnectionProvider(){}
-
-    public ResponseEntity loginRequest(String serverFunction,List<ServerArgument> args, RequestType type) {
-        return null;
-    }
-
-    public ResponseEntity loginRequest(String serverFunction, String Login , String PASSWORD, RequestType type) throws IOException {
-//        if(!serverURL.isBlank()) {
-//            String url = createURL(serverURL, serverFunction, arguments);
-//          //  RestTemplate template = new RestTemplate();
-//            ClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-//            RestTemplate restTemplate = new RestTemplate(factory);
-//            ResponseEntity result = null;
-//            try{
-//                result = restTemplate.getForEntity(url, HttpStatus.class);
-//            } catch (Exception e){
-//                //TODO : logger
-//               e.printStackTrace();
-//            }
-//            return result;
-//        } else{
-//            throw new IOException("The server url was not found.");
-//            //TODO : logger
-//        }
-
-        LoginRequest req = new LoginRequest();
-        req.setLogin(Login);
-        req.setPassword(PASSWORD);
-
-        // RestTemplate
-        RestTemplate restTemplate = new RestTemplate();
-
-        String url = createURL(serverURL, serverFunction, null);
-
-        var response = restTemplate.getForEntity(url , LoginRequest.class , req);
-
-        String result = response.toString();
-
-        System.out.println(result);
-
-
-        return null;
-    }
 
     private String createURL(String serverURL, String serverFunction, List<ServerArgument> arguments){
         StringBuilder url = new StringBuilder();
@@ -96,10 +47,45 @@ public class ServerConnectionProvider {
         return restTempl.postForEntity(url, requestEntity, SignupResponse.class);
     }
 
-    public ResponseEntity<LoginResponse> loginRequest(LoginRequest requestEntity){
+    public ResponseEntity<JwtResponse> loginRequest(LoginRequest requestEntity){
         var url = serverURL + "login";
         RestTemplate restTempl = new RestTemplate();
-        return restTempl.postForEntity(url, requestEntity, LoginResponse.class);
+        return restTempl.postForEntity(url, requestEntity, JwtResponse.class);
+    }
+
+    public ResponseEntity<ChangePasswordResponse> getToken(SendChangePasswordTokenRequest requestEntity){
+        var url = serverURL + "sendTokenForChangingPassword";
+        RestTemplate restTempl = new RestTemplate();
+        return restTempl.postForEntity(url, requestEntity, ChangePasswordResponse.class);
+    }
+
+    public ResponseEntity<String> changePassword(ChangePasswordRequest requestEntity){
+        var url = serverURL + "submitChangingPassword";
+        RestTemplate restTempl = new RestTemplate();
+        return restTempl.postForEntity(url, requestEntity, String.class);
+    }
+
+    public ResponseEntity<String> getUserChats(JwtResponse requestEntity){
+        RestTemplate restTempl = new RestTemplate();
+        var url = serverURL + "getUserChats";
+
+        LoginRequest req = new LoginRequest();
+        req.setUsername("bestvineco");
+        req.setPassword(" ");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJiZXN0dmluZWNvIiwiaWF0IjoxNjAxNTAwNzQ2LCJleHAiOjE2MDE1ODcxNDZ9.Fr-1TDA2glYMfHuDK8VJx__kNrFto82IZ6rbl6DMlMs7r-F7cPE0JBO7562Sn6xVxDRimUJAkAmPtIWWMiAbNQ");
+
+        // create request
+        HttpEntity<LoginRequest> request = new HttpEntity(req , headers);
+
+
+
+        // make a request
+        ResponseEntity<Object> response = new RestTemplate().exchange(url, HttpMethod.GET, request, Object.class);
+
+        // get JSON response
+        Object json = response.getBody();
+        return null;
     }
 
 }

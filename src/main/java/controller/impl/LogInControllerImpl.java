@@ -2,7 +2,6 @@ package controller.impl;
 
 import controller.LogInController;
 import data.CurrentUser;
-import data.ServerArgument;
 import data.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,16 +13,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import providers.RequestType;
+import providers.DialogProvider;
 import providers.ServerConnectionProvider;
+import request.LoginRequest;
+import response.JwtResponse;
+import response.LoginResponse;
+
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class LogInControllerImpl implements LogInController {
@@ -55,18 +54,16 @@ public class LogInControllerImpl implements LogInController {
             if(loginField.getText().length() == 0 || passwordField.getText().length() == 0){
                 return;
             }
-
-            List<ServerArgument> argumentsList = new ArrayList<>();
-            argumentsList.add(new ServerArgument("login" , loginField.getText()));
-            argumentsList.add(new ServerArgument("password" , passwordField.getText()));
-
-            ResponseEntity answer = ServerConnectionProvider.getInstance().loginRequest("application", loginField.getText() , passwordField.getText(), RequestType.POST);
+            LoginRequest requestBody = new LoginRequest(loginField.getText() , passwordField.getText());
+            ResponseEntity<JwtResponse> answer = ServerConnectionProvider.getInstance().loginRequest(requestBody);
+            logger.info("Request was sent");
 
             User user = new User(loginField.getText(), passwordField.getText());
             CurrentUser.init(user);
 
-            if (Objects.equals(answer.getStatusCode(), HttpStatus.FOUND)) {
+             if(answer.getStatusCode().is2xxSuccessful()){
                 logger.info("User is logged in");
+                DialogProvider.ShowDialog("SUCCESSFUL" , "New user created");
 
                 //Открываем главное окно
                 Stage applStage = new Stage();
@@ -81,9 +78,7 @@ public class LogInControllerImpl implements LogInController {
                 currentStageToClose.close();
                 return;
             }
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setContentText("Wrong login or password");
-            alert.show();
+                 DialogProvider.ShowDialog("ERROR" , "Wrong login or password" , Alert.AlertType.ERROR);
 
         } catch (Exception e) {
             logger.info(e.getMessage());

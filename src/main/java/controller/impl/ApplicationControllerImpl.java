@@ -94,91 +94,91 @@ public class ApplicationControllerImpl implements ApplicationController {
     @FXML
     @Override
     public void send(ActionEvent event) {
-        if (usersListView.getSelectionModel().isEmpty()){
-            logger.info("Send function call: user is empty");
-            return;
-        }
-        else{
-            String selectedUser = usersListView.getSelectionModel().getSelectedItem();
-            if(sendMessageField.getText().length() > 0){
-                boolean isExistsOnlyOfSpace = true;
-
-                for(Character symbol : sendMessageField.getText().toCharArray()){
-                    if(!symbol.equals(' ')){
-                        isExistsOnlyOfSpace = false;
-                        break;
-                    }
-                }
-                if(isExistsOnlyOfSpace){
-                    logger.info("Entered message text consist only of space");
-                    return;
-                } else {
-                    try {
-                        logger.info("Staring send 'sendMessage' to server");
-
-                        List<ServerArgument> argumentsList = new ArrayList<>();
-                        argumentsList.add(new ServerArgument("senderLogin", CurrentUser.getCurrentUser().getLogin()));
-                        argumentsList.add(new ServerArgument("receiverLogin", usersListView.getSelectionModel().getSelectedItem()));
-                        argumentsList.add(new ServerArgument("message", sendMessageField.getText().replaceAll(" " , "%20")));
-
-                        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("sendMessage" ,argumentsList, RequestType.GET);
-                        String mesg = sendMessageField.getText().replaceAll(" ", "%20");
-
-                        logger.info("Request 'sendMessage' sent" );
-
-                        DateFormat formatter = new SimpleDateFormat("HH:mm");
-                        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-                        String dateFormatted = formatter.format(System.currentTimeMillis());
-                        chatListView.getItems().add(dateFormatted + " " + CurrentUser.getCurrentUser().getLogin() + ": " + sendMessageField.getText());
-
-                        int index = chatListView.getItems().size() - 1;
-                        chatListView.scrollTo(index);
-
-                        sendMessageField.clear();
-
-                    } catch (Exception e){
-                        logger.warn(e.getMessage());
-                        System.out.println(e.getMessage());
-                    }
-                }
-            } else {
-                return;
-            }
-            logger.info("Entered message text less than 0 symbols");
-        }
+//        if (usersListView.getSelectionModel().isEmpty()){
+//            logger.info("Send function call: user is empty");
+//            return;
+//        }
+//        else{
+//            String selectedUser = usersListView.getSelectionModel().getSelectedItem();
+//            if(sendMessageField.getText().length() > 0){
+//                boolean isExistsOnlyOfSpace = true;
+//
+//                for(Character symbol : sendMessageField.getText().toCharArray()){
+//                    if(!symbol.equals(' ')){
+//                        isExistsOnlyOfSpace = false;
+//                        break;
+//                    }
+//                }
+//                if(isExistsOnlyOfSpace){
+//                    logger.info("Entered message text consist only of space");
+//                    return;
+//                } else {
+//                    try {
+//                        logger.info("Staring send 'sendMessage' to server");
+//
+//                        List<ServerArgument> argumentsList = new ArrayList<>();
+//                        argumentsList.add(new ServerArgument("senderLogin", CurrentUser.getCurrentUser().getLogin()));
+//                        argumentsList.add(new ServerArgument("receiverLogin", usersListView.getSelectionModel().getSelectedItem()));
+//                        argumentsList.add(new ServerArgument("message", sendMessageField.getText().replaceAll(" " , "%20")));
+//
+//                        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("sendMessage" ,argumentsList, RequestType.GET);
+//                        String mesg = sendMessageField.getText().replaceAll(" ", "%20");
+//
+//                        logger.info("Request 'sendMessage' sent" );
+//
+//                        DateFormat formatter = new SimpleDateFormat("HH:mm");
+//                        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+//                        String dateFormatted = formatter.format(System.currentTimeMillis());
+//                        chatListView.getItems().add(dateFormatted + " " + CurrentUser.getCurrentUser().getLogin() + ": " + sendMessageField.getText());
+//
+//                        int index = chatListView.getItems().size() - 1;
+//                        chatListView.scrollTo(index);
+//
+//                        sendMessageField.clear();
+//
+//                    } catch (Exception e){
+//                        logger.warn(e.getMessage());
+//                        System.out.println(e.getMessage());
+//                    }
+//                }
+//            } else {
+//                return;
+//            }
+//            logger.info("Entered message text less than 0 symbols");
+//        }
     }
 
     @FXML
     @Override
     public void findUser(ActionEvent event) {
-        if (findUserLogin.getText().length() == 0){
-            return;
-        }
-
-        try {
-            logger.info("Start send 'findUser' to server");
-
-            List<ServerArgument> argumentsList = new ArrayList<>();
-            argumentsList.add(new ServerArgument("senderLogin", CurrentUser.getCurrentUser().getLogin()));
-            argumentsList.add(new ServerArgument("findUserLogin", findUserLogin.getText()));
-
-            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("isUserExist", argumentsList, RequestType.GET);
-            logger.info("Request sent");
-
-            if(Objects.equals(answer.getStatusCode(), HttpStatus.OK)){
-                logger.info("Response 0 from server");
-                usersListView.getItems().add(findUserLogin.getText());
-                usersListView.refresh();
-            } else {
-                logger.warn("Response not 0 from server: " + answer.getStatusCode());
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setContentText("User not found");
-                alert.show();
-            }
-        } catch (Exception e){
-            logger.warn(e.getMessage());
-            System.out.println(e.getMessage());
-        }
+//        if (findUserLogin.getText().length() == 0){
+//            return;
+//        }
+//
+//        try {
+//            logger.info("Start send 'findUser' to server");
+//
+//            List<ServerArgument> argumentsList = new ArrayList<>();
+//            argumentsList.add(new ServerArgument("senderLogin", CurrentUser.getCurrentUser().getLogin()));
+//            argumentsList.add(new ServerArgument("findUserLogin", findUserLogin.getText()));
+//
+//            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("isUserExist", argumentsList, RequestType.GET);
+//            logger.info("Request sent");
+//
+//            if(Objects.equals(answer.getStatusCode(), HttpStatus.OK)){
+//                logger.info("Response 0 from server");
+//                usersListView.getItems().add(findUserLogin.getText());
+//                usersListView.refresh();
+//            } else {
+//                logger.warn("Response not 0 from server: " + answer.getStatusCode());
+//                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//                alert.setContentText("User not found");
+//                alert.show();
+//            }
+//        } catch (Exception e){
+//            logger.warn(e.getMessage());
+//            System.out.println(e.getMessage());
+//        }
     }
 
     @Override
@@ -189,114 +189,114 @@ public class ApplicationControllerImpl implements ApplicationController {
 
     @Override
     public void bindThreadCheckNewMessages() {
-        Task task = new Task() {
-            @Override
-            protected Void call() throws IOException {
-                do {
-                    List<ServerArgument> argumentsList = new ArrayList<>();
-                    argumentsList.add(new ServerArgument("senderLogin", CurrentUser.getCurrentUser().getLogin()));
-
-                    ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("haveNewMessages", argumentsList, RequestType.GET);
-
-                    Gson gson = new Gson();
-
-                    if (Objects.equals(answer.getBody(), 0)) {
-                        Type listType = new TypeToken<Set<String>>() {
-                        }.getType();
-                        //TODO
-                        Set<String> users = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
-                    }
-
-                    Type listType = new TypeToken<ArrayList<String>>() {
-                    }.getType();
-                    //TODO
-                    ArrayList<String> usersChatUpdated = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
-
-                    if (usersChatUpdated.size() != 0) {
-                        ObservableList<String> arrUsers = usersListView.getItems();
-
-                        usersChatUpdated.forEach(item -> {
-                            if (CurrentUser.currentChat.equals(item)) {
-                                Platform.runLater(() -> {
-                                    try {
-                                        updateChatForUser(item);
-                                    } catch (IOException e) {
-                                        logger.warn("Chat doesn't update");
-                                        e.printStackTrace();
-                                    }
-                                });
-                            }
-                        });
-                    }
-                        // TODO: доделать обновление для других пользователей
-
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e) {
-                            logger.warn("Error in Thread");
-                            e.printStackTrace();
-                        }
-
-                } while(true) ;
-            }
-        };
-        logger.info("Thread bound");
-        CurrentUser.ourThread = new Thread(task);
-        CurrentUser.ourThread.start();
-        logger.info("Thread started");
+//        Task task = new Task() {
+//            @Override
+//            protected Void call() throws IOException {
+//                do {
+//                    List<ServerArgument> argumentsList = new ArrayList<>();
+//                    argumentsList.add(new ServerArgument("senderLogin", CurrentUser.getCurrentUser().getLogin()));
+//
+//                    ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("haveNewMessages", argumentsList, RequestType.GET);
+//
+//                    Gson gson = new Gson();
+//
+//                    if (Objects.equals(answer.getBody(), 0)) {
+//                        Type listType = new TypeToken<Set<String>>() {
+//                        }.getType();
+//                        //TODO
+//                        Set<String> users = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
+//                    }
+//
+//                    Type listType = new TypeToken<ArrayList<String>>() {
+//                    }.getType();
+//                    //TODO
+//                    ArrayList<String> usersChatUpdated = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
+//
+//                    if (usersChatUpdated.size() != 0) {
+//                        ObservableList<String> arrUsers = usersListView.getItems();
+//
+//                        usersChatUpdated.forEach(item -> {
+//                            if (CurrentUser.currentChat.equals(item)) {
+//                                Platform.runLater(() -> {
+//                                    try {
+//                                        updateChatForUser(item);
+//                                    } catch (IOException e) {
+//                                        logger.warn("Chat doesn't update");
+//                                        e.printStackTrace();
+//                                    }
+//                                });
+//                            }
+//                        });
+//                    }
+//                        // TODO: доделать обновление для других пользователей
+//
+//                        try {
+//                            Thread.sleep(2000);
+//                        } catch (InterruptedException e) {
+//                            logger.warn("Error in Thread");
+//                            e.printStackTrace();
+//                        }
+//
+//                } while(true) ;
+//            }
+//        };
+//        logger.info("Thread bound");
+//        CurrentUser.ourThread = new Thread(task);
+//        CurrentUser.ourThread.start();
+//        logger.info("Thread started");
     }
 
     @Override
     public void updateChatForUser(String login) throws IOException {
-        logger.info("Sending 'updateChatForUser' request to server");
-
-        List<ServerArgument> argumentsList = new ArrayList<>();
-        argumentsList.add(new ServerArgument("senderLogin" , CurrentUser.getCurrentUser().getLogin()));
-        argumentsList.add(new ServerArgument("companionLogin", login));
-
-        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("getChat", argumentsList, RequestType.GET);
-
-        logger.info("Request was sent");
-        Gson gson = new Gson();
-
-        //TODO
-        Type listType = new TypeToken<ArrayList<Message>>(){}.getType();
-        ArrayList<Message> messages = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
-
-        chatListView.getItems().clear();
-
-        for(Message msg : messages){
-            DateFormat formatter = new SimpleDateFormat("HH:mm");
-            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-            String dateFormatted = formatter.format(msg.getDate().getTime());
-            chatListView.getItems().add(dateFormatted + " " + msg.getSender() + " : " + msg.getMessage());
-        }
-        chatListView.refresh();
-        CurrentUser.currentChat = login;
-
-        int index = chatListView.getItems().size() - 1;
-        chatListView.scrollTo(index);
+//        logger.info("Sending 'updateChatForUser' request to server");
+//
+//        List<ServerArgument> argumentsList = new ArrayList<>();
+//        argumentsList.add(new ServerArgument("senderLogin" , CurrentUser.getCurrentUser().getLogin()));
+//        argumentsList.add(new ServerArgument("companionLogin", login));
+//
+//        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("getChat", argumentsList, RequestType.GET);
+//
+//        logger.info("Request was sent");
+//        Gson gson = new Gson();
+//
+//        //TODO
+//        Type listType = new TypeToken<ArrayList<Message>>(){}.getType();
+//        ArrayList<Message> messages = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
+//
+//        chatListView.getItems().clear();
+//
+//        for(Message msg : messages){
+//            DateFormat formatter = new SimpleDateFormat("HH:mm");
+//            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+//            String dateFormatted = formatter.format(msg.getDate().getTime());
+//            chatListView.getItems().add(dateFormatted + " " + msg.getSender() + " : " + msg.getMessage());
+//        }
+//        chatListView.refresh();
+//        CurrentUser.currentChat = login;
+//
+//        int index = chatListView.getItems().size() - 1;
+//        chatListView.scrollTo(index);
     }
 
     @Override
     public void loadUserChats () throws IOException {
-            logger.info("Request 'loaduserchat' configuration");
-
-            List<ServerArgument> argumentsList = new ArrayList<>();
-            argumentsList.add(new ServerArgument("login", CurrentUser.getCurrentUser().getLogin()));
-
-            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("getUserChats", argumentsList, RequestType.GET);
-
-            logger.info("Request was sent");
-            Gson gson = new Gson();
-
-            //TODO
-            Type listType = new TypeToken<Set<String>>(){}.getType();
-            Set<String> currentUsersChat = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
-            currentUsersChat.remove(CurrentUser.getCurrentUser().getLogin());
-            usersListView.getItems().addAll(currentUsersChat);
-            usersListView.refresh();
-
+//            logger.info("Request 'loaduserchat' configuration");
+//
+//            List<ServerArgument> argumentsList = new ArrayList<>();
+//            argumentsList.add(new ServerArgument("login", CurrentUser.getCurrentUser().getLogin()));
+//
+//            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().getUserChats();
+//
+//            logger.info("Request was sent");
+//            Gson gson = new Gson();
+//
+//            //TODO
+//            Type listType = new TypeToken<Set<String>>(){}.getType();
+//            Set<String> currentUsersChat = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
+//            currentUsersChat.remove(CurrentUser.getCurrentUser().getLogin());
+//            usersListView.getItems().addAll(currentUsersChat);
+//            usersListView.refresh();
+            ServerConnectionProvider.getInstance().getUserChats(null);
     }
 
     @FXML

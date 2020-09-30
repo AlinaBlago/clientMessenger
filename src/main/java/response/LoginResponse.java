@@ -3,15 +3,19 @@ package response;
 public class LoginResponse {
     private String login;
     private String password;
-    private boolean status;
 
-    public LoginResponse() {
+    public static LoginResponse fromMessage(LoginResponse response) {
+        return new LoginResponse(
+                response.getLogin(),
+                response.getPassword()
+        );
     }
 
-    public LoginResponse(String login, String password, boolean status) {
+    LoginResponse() {}
+
+    public LoginResponse(String login, String password) {
         this.login = login;
         this.password = password;
-        this.status = status;
     }
 
     public String getLogin() {
@@ -28,13 +32,5 @@ public class LoginResponse {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
     }
 }

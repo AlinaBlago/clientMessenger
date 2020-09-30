@@ -1,7 +1,6 @@
 package controller.impl;
 
 import controller.LogUpController;
-import data.ServerArgument;
 import exceptions.ValidationException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,25 +8,19 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import providers.DialogProvider;
-import providers.RequestType;
 import providers.ServerConnectionProvider;
 import request.SignupRequest;
 import response.SignupResponse;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class LogUpControllerImpl implements LogUpController {
 
     @FXML
-    TextField nameField;
+    TextField emailField;
 
     @FXML
     TextField loginField;
@@ -58,7 +51,7 @@ public class LogUpControllerImpl implements LogUpController {
                 return;
             }
             logger.info("Request sign up sending");
-            SignupRequest requestBody = new SignupRequest(nameField.getText() , loginField.getText() , passwordField.getText());
+            SignupRequest requestBody = new SignupRequest(emailField.getText() , loginField.getText() , passwordField.getText());
             ResponseEntity<SignupResponse> answer = ServerConnectionProvider.getInstance().signUpRequest(requestBody);
             logger.info("Request was sent");
 
@@ -74,7 +67,7 @@ public class LogUpControllerImpl implements LogUpController {
     }
 
     private void validateSignUpFields() throws ValidationException {
-        if (nameField.getText().length() < 1)
+        if (emailField.getText().length() < 1)
             throw new ValidationException("" , "Name" , "enter name more than 1 symbol!");
         if (loginField.getText().length() < 2)
             throw new ValidationException("" , "login" , "enter name more than 2 symbol!");
