@@ -55,7 +55,7 @@ public class LogInControllerImpl implements LogInController {
                 return;
             }
             LoginRequest requestBody = new LoginRequest(loginField.getText() , passwordField.getText());
-            ResponseEntity<JwtResponse> answer = ServerConnectionProvider.getInstance().loginRequest(requestBody);
+            ResponseEntity<String> answer = ServerConnectionProvider.getInstance().loginRequest(requestBody);
             logger.info("Request was sent");
 
             User user = new User(loginField.getText(), passwordField.getText());
@@ -63,7 +63,9 @@ public class LogInControllerImpl implements LogInController {
 
              if(answer.getStatusCode().is2xxSuccessful()){
                 logger.info("User is logged in");
-                DialogProvider.ShowDialog("SUCCESSFUL" , "New user created");
+                DialogProvider.ShowDialog("SUCCESSFUL" , "You are logged in");
+                CurrentUser.setAuthToken(answer.getBody());
+                 System.out.println(answer.getBody());
 
                 //Открываем главное окно
                 Stage applStage = new Stage();

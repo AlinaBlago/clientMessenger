@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import providers.RequestType;
 import providers.ServerConnectionProvider;
+import request.GetUserChatsRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -280,23 +281,20 @@ public class ApplicationControllerImpl implements ApplicationController {
 
     @Override
     public void loadUserChats () throws IOException {
-//            logger.info("Request 'loaduserchat' configuration");
-//
-//            List<ServerArgument> argumentsList = new ArrayList<>();
-//            argumentsList.add(new ServerArgument("login", CurrentUser.getCurrentUser().getLogin()));
-//
-//            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().getUserChats();
-//
-//            logger.info("Request was sent");
-//            Gson gson = new Gson();
-//
-//            //TODO
-//            Type listType = new TypeToken<Set<String>>(){}.getType();
-//            Set<String> currentUsersChat = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
-//            currentUsersChat.remove(CurrentUser.getCurrentUser().getLogin());
-//            usersListView.getItems().addAll(currentUsersChat);
-//            usersListView.refresh();
-            ServerConnectionProvider.getInstance().getUserChats(null);
+        logger.info("Request 'loaduserchat' configuration");
+
+        GetUserChatsRequest request = new GetUserChatsRequest();
+        request.setToken(CurrentUser.getAuthToken());
+        ResponseEntity<String> answer = ServerConnectionProvider.getInstance().getUserChats(request);
+        logger.info("Request was sent");
+        Gson gson = new Gson();
+
+            //TODO
+        Type listType = new TypeToken<Set<String>>(){}.getType();
+        Set<String> currentUsersChat = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
+        currentUsersChat.remove(CurrentUser.getCurrentUser().getLogin());
+        usersListView.getItems().addAll(currentUsersChat);
+        usersListView.refresh();
     }
 
     @FXML

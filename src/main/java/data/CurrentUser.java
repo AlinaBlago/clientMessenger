@@ -7,7 +7,8 @@ public class CurrentUser {
     private static User currentUser;
     public static Thread ourThread ;
     public static String currentChat;
-    private static String token;
+    private static String changePasswordToken;
+    private static String authToken;
     private static String username;
     private static final Logger logger = LoggerFactory.getLogger(CurrentUser.class);
 
@@ -23,12 +24,20 @@ public class CurrentUser {
         currentUser = null;
     }
 
-    public static String getToken() {
-        return token;
+    public static String getChangePasswordToken() {
+        return changePasswordToken;
     }
 
-    public static void setToken(String token) {
-        CurrentUser.token = token;
+    public static void setChangePasswordToken(String changePasswordToken) {
+        CurrentUser.changePasswordToken = changePasswordToken;
+    }
+
+    public static String getAuthToken() {
+        return authToken;
+    }
+
+    public static void setAuthToken(String authToken) {
+        CurrentUser.authToken = authToken;
     }
 
     public static String getUsername() {

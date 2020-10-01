@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controller.impl.ApplicationControllerImpl">
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.impl.ApplicationControllerImpl">
     <columnConstraints>
         <ColumnConstraints />
     </columnConstraints>
@@ -51,8 +51,8 @@
                 </Button>
                 <SplitPane dividerPositions="0.27979274611398963" layoutX="17.0" layoutY="221.0" prefHeight="322.0" prefWidth="581.0">
                     <items>
-                        <ListView fx:id="usersListView" prefHeight="320.0" prefWidth="170.0" style="-fx-background-color: orange;" />
-                        <ListView fx:id="chatListView" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: purple;" />
+                        <ListView fx:id="usersListView" prefHeight="320.0" prefWidth="170.0" style="-fx-background-color: #82E0AA;" />
+                        <ListView fx:id="chatListView" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: pink;" />
                     </items>
                 </SplitPane>
                 <TextField fx:id="sendMessageField" layoutX="196.0" layoutY="575.0" prefHeight="35.0" prefWidth="402.0" />

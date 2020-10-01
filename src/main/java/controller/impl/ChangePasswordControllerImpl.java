@@ -15,9 +15,7 @@ import org.springframework.http.ResponseEntity;
 import providers.DialogProvider;
 import providers.ServerConnectionProvider;
 import request.SendChangePasswordTokenRequest;
-import request.SignupRequest;
 import response.ChangePasswordResponse;
-import response.SignupResponse;
 
 import java.io.IOException;
 import java.net.URL;
@@ -47,7 +45,7 @@ public class ChangePasswordControllerImpl implements ChangePasswordController {
         logger.info("Request was sent");
 
         CurrentUser.setUsername(answer.getBody().getUsername());
-        CurrentUser.setToken(answer.getBody().getToken());
+        CurrentUser.setChangePasswordToken(answer.getBody().getToken());
         System.out.println(CurrentUser.getUsername());
 
         if(answer.getStatusCode().is2xxSuccessful()){

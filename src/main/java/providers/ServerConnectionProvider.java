@@ -1,5 +1,6 @@
 package providers;
 
+import data.CurrentUser;
 import data.ServerArgument;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.*;
@@ -10,6 +11,7 @@ import response.JwtResponse;
 import response.LoginResponse;
 import response.SignupResponse;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -47,10 +49,11 @@ public class ServerConnectionProvider {
         return restTempl.postForEntity(url, requestEntity, SignupResponse.class);
     }
 
-    public ResponseEntity<JwtResponse> loginRequest(LoginRequest requestEntity){
+    public ResponseEntity<String> loginRequest(LoginRequest requestEntity){
         var url = serverURL + "login";
         RestTemplate restTempl = new RestTemplate();
-        return restTempl.postForEntity(url, requestEntity, JwtResponse.class);
+        //return restTempl.postForEntity(url, requestEntity, JwtResponse.class);
+        return  restTempl.postForEntity(url, requestEntity, String.class);
     }
 
     public ResponseEntity<ChangePasswordResponse> getToken(SendChangePasswordTokenRequest requestEntity){
@@ -65,27 +68,14 @@ public class ServerConnectionProvider {
         return restTempl.postForEntity(url, requestEntity, String.class);
     }
 
-    public ResponseEntity<String> getUserChats(JwtResponse requestEntity){
-        RestTemplate restTempl = new RestTemplate();
+    public ResponseEntity<String> getUserChats(GetUserChatsRequest requestEntity){
         var url = serverURL + "getUserChats";
-
-        LoginRequest req = new LoginRequest();
-        req.setUsername("bestvineco");
-        req.setPassword(" ");
+        RestTemplate restTempl = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJiZXN0dmluZWNvIiwiaWF0IjoxNjAxNTAwNzQ2LCJleHAiOjE2MDE1ODcxNDZ9.Fr-1TDA2glYMfHuDK8VJx__kNrFto82IZ6rbl6DMlMs7r-F7cPE0JBO7562Sn6xVxDRimUJAkAmPtIWWMiAbNQ");
+        headers.add("Authorization", "Bearer " + CurrentUser.getAuthToken());
 
-        // create request
-        HttpEntity<LoginRequest> request = new HttpEntity(req , headers);
+        return restTempl.exchange(url, HttpMethod.POST, new HttpEntity<>(headers), String.class);
 
-
-
-        // make a request
-        ResponseEntity<Object> response = new RestTemplate().exchange(url, HttpMethod.GET, request, Object.class);
-
-        // get JSON response
-        Object json = response.getBody();
-        return null;
     }
 
 }
