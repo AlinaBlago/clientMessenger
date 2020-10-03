@@ -55,7 +55,9 @@ public class LogInControllerImpl implements LogInController {
                 return;
             }
             LoginRequest requestBody = new LoginRequest(loginField.getText() , passwordField.getText());
-            ResponseEntity<String> answer = ServerConnectionProvider.getInstance().loginRequest(requestBody);
+//            ResponseEntity<String> answer = ServerConnectionProvider.getInstance().loginRequest(requestBody);
+            ResponseEntity<String> answer = ServerConnectionProvider.getInstance().loginRequest2(requestBody);
+
             logger.info("Request was sent");
 
             User user = new User(loginField.getText(), passwordField.getText());

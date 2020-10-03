@@ -18,7 +18,7 @@ import java.util.List;
 public class ServerConnectionProvider {
     private static ServerConnectionProvider instance;
 
-    public static final String serverURL = "http://localhost:8080/";
+    public static final String serverURL = "http://localhost:8080/users/";
 
     public static ServerConnectionProvider getInstance() {
         if(instance == null) instance = new ServerConnectionProvider();
@@ -49,11 +49,24 @@ public class ServerConnectionProvider {
         return restTempl.postForEntity(url, requestEntity, SignupResponse.class);
     }
 
+    public ResponseEntity<?> signUpRequest2(SignupRequest requestEntity){
+        var url = serverURL;
+        RestTemplate restTempl = new RestTemplate();
+        return restTempl.postForEntity(url, requestEntity, String.class);
+    }
+
     public ResponseEntity<String> loginRequest(LoginRequest requestEntity){
-        var url = serverURL + "login";
+        var url = serverURL + "me";
         RestTemplate restTempl = new RestTemplate();
         //return restTempl.postForEntity(url, requestEntity, JwtResponse.class);
         return  restTempl.postForEntity(url, requestEntity, String.class);
+    }
+
+    public ResponseEntity<String> loginRequest2(LoginRequest loginRequest){
+        var url = serverURL + "login";
+        RestTemplate restTempl = new RestTemplate();
+        //return restTempl.postForEntity(url, requestEntity, JwtResponse.class);
+        return  restTempl.getForEntity(url, String.class, loginRequest);
     }
 
     public ResponseEntity<ChangePasswordResponse> getToken(SendChangePasswordTokenRequest requestEntity){
