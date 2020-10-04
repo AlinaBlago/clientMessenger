@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 public class CurrentUser {
     private static User currentUser;
-    public static Thread ourThread ;
     public static String currentChat;
     private static String changePasswordToken;
     private static String authToken;

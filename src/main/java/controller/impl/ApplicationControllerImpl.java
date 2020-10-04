@@ -4,11 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import controller.ApplicationController;
 import data.CurrentUser;
-import data.ServerArgument;
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,21 +13,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import massage.Message;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import providers.RequestType;
+import providers.DialogProvider;
 import providers.ServerConnectionProvider;
-import request.GetUserChatsRequest;
+import request.AddChatRequest;
+import response.ChatResponse;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ApplicationControllerImpl implements ApplicationController {
@@ -59,6 +50,8 @@ public class ApplicationControllerImpl implements ApplicationController {
     @FXML
     Button findUserButton;
 
+    private String selectedChatLogin;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         logoutButton.setOnAction(this::logOut);
@@ -84,17 +77,23 @@ public class ApplicationControllerImpl implements ApplicationController {
     @FXML
     @Override
     public void usersListViewChanged(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        try {
-            updateChatForUser(newValue);
-        } catch (IOException e) {
-          logger.info("Chat doesn't update for user.");
-          e.printStackTrace();
-        }
+        //TODO: GET /me/messages (get all messages with that human)
+
+        chatListView.getItems().clear();
+        chatListView.refresh();
+        this.selectedChatLogin = newValue;
+        // сделать этот метод если рабоатет отправка , и сделан метод GET /me/messages
+        //updateChatForUser(newValue);
     }
 
     @FXML
     @Override
     public void send(ActionEvent event) {
+        if(!selectedChatLogin.isBlank()){
+            //TODO: CALL SERVERPROVIDER SEND MESSAGE
+
+            //TODO: добавь полученное сообщение в chatListView и потом обязательно сделать у него рефреш
+        }
 //        if (usersListView.getSelectionModel().isEmpty()){
 //            logger.info("Send function call: user is empty");
 //            return;
@@ -152,39 +151,35 @@ public class ApplicationControllerImpl implements ApplicationController {
     @FXML
     @Override
     public void findUser(ActionEvent event) {
-//        if (findUserLogin.getText().length() == 0){
-//            return;
-//        }
-//
-//        try {
-//            logger.info("Start send 'findUser' to server");
-//
-//            List<ServerArgument> argumentsList = new ArrayList<>();
-//            argumentsList.add(new ServerArgument("senderLogin", CurrentUser.getCurrentUser().getLogin()));
-//            argumentsList.add(new ServerArgument("findUserLogin", findUserLogin.getText()));
-//
-//            ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("isUserExist", argumentsList, RequestType.GET);
-//            logger.info("Request sent");
-//
-//            if(Objects.equals(answer.getStatusCode(), HttpStatus.OK)){
-//                logger.info("Response 0 from server");
-//                usersListView.getItems().add(findUserLogin.getText());
-//                usersListView.refresh();
-//            } else {
-//                logger.warn("Response not 0 from server: " + answer.getStatusCode());
-//                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//                alert.setContentText("User not found");
-//                alert.show();
-//            }
-//        } catch (Exception e){
-//            logger.warn(e.getMessage());
-//            System.out.println(e.getMessage());
-//        }
+        if (findUserLogin.getText().length() == 0){
+            return;
+        }
+        try {
+            logger.info("Start send 'findUser' to server");
+
+            AddChatRequest request = new AddChatRequest();
+            request.setUsername(findUserLogin.getText());
+            ResponseEntity<ChatResponse> answer = ServerConnectionProvider.getInstance().addChat(request);
+            logger.info("Request sent");
+
+            if (answer.getStatusCode().is2xxSuccessful()) {
+               logger.info("Response 0 from server");
+                usersListView.getItems().add(findUserLogin.getText());
+                usersListView.refresh();
+            } else {
+                logger.warn("Response not 0 from server: " + answer.getStatusCode());
+                DialogProvider.ShowDialog("ERROR", "User not found", Alert.AlertType.ERROR);
+
+            }
+        } catch (Exception e){
+            logger.warn(e.getMessage());
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
     public void setCurrentUserNameToWindow() {
-        String text = "Вы вошли под логином: " + CurrentUser.getCurrentUser().getLogin();
+        String text = "Вы вошли под логином: " + CurrentUser.getUsername();
         currentUserNameLabel.setText(text);
     }
 
@@ -282,18 +277,21 @@ public class ApplicationControllerImpl implements ApplicationController {
     @Override
     public void loadUserChats () throws IOException {
         logger.info("Request 'loaduserchat' configuration");
-
-        GetUserChatsRequest request = new GetUserChatsRequest();
-        request.setToken(CurrentUser.getAuthToken());
-        ResponseEntity<String> answer = ServerConnectionProvider.getInstance().getUserChats(request);
+        ResponseEntity<List<ChatResponse>> answer = ServerConnectionProvider.getInstance().getUserChats();
         logger.info("Request was sent");
-        Gson gson = new Gson();
 
-            //TODO
-        Type listType = new TypeToken<Set<String>>(){}.getType();
-        Set<String> currentUsersChat = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
-        currentUsersChat.remove(CurrentUser.getCurrentUser().getLogin());
-        usersListView.getItems().addAll(currentUsersChat);
+        List<String> chats = new ArrayList();
+
+        answer.getBody().forEach(chatResponse ->
+        {
+            if(!chatResponse.getLoginFirst().equals(CurrentUser.getUsername())){
+                chats.add(chatResponse.getLoginFirst());
+            }else{
+                chats.add(chatResponse.getLoginSecond());
+            }
+        });
+
+        usersListView.getItems().addAll(chats);
         usersListView.refresh();
     }
 
@@ -302,9 +300,6 @@ public class ApplicationControllerImpl implements ApplicationController {
     public void logOut(ActionEvent event) {
         logger.info("Logout command");
         CurrentUser.logOut();
-        //TODO
-        CurrentUser.ourThread.stop();
-        logger.info("Thread was stopped");
 
         Stage stageToClose = (Stage) logoutButton.getScene().getWindow();
         stageToClose.close();

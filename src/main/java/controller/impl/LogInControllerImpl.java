@@ -15,6 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.springframework.http.ResponseEntity;
 import providers.DialogProvider;
+import providers.NavigationProvider;
 import providers.ServerConnectionProvider;
 import request.LoginRequest;
 import response.JwtResponse;
@@ -51,39 +52,37 @@ public class LogInControllerImpl implements LogInController {
     @FXML
     private void onLoginClick(ActionEvent event) {
         try {
-            if(loginField.getText().length() == 0 || passwordField.getText().length() == 0){
-                return;
+            if(loginField.getText().length() > 0 || passwordField.getText().length() > 0) {
+
+                LoginRequest requestBody = new LoginRequest(loginField.getText(), passwordField.getText());
+
+                logger.info("Request was sent");
+                ResponseEntity<String> answer = ServerConnectionProvider.getInstance().loginRequest(requestBody);
+                logger.info("Answer received");
+
+                if (answer.getStatusCode().is2xxSuccessful()) {
+                    CurrentUser.setUsername(loginField.getText());
+
+                    logger.info("User is logged in");
+
+                    CurrentUser.setAuthToken(answer.getHeaders().get("Authorization").get(0));
+                    //RETURN LOGIN ON SERVER WHEN LOGIN
+                    Stage applStage = new Stage();
+                    Parent applSceneRoot = null;
+                    try {
+                        applSceneRoot = FXMLLoader.load(LogInControllerImpl.this.getClass().getResource("/application.fxml"));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    applStage.setScene(new Scene(applSceneRoot, 620, 680));
+                    applStage.show();
+
+                    ((Stage) loginButton.getScene().getWindow()).close();
+                   // NavigationProvider.NavigateToMainForm((Stage)signUpButton.getScene().getWindow());
+                }else{
+                    DialogProvider.ShowDialog("ERROR", "Wrong login or password", Alert.AlertType.ERROR);
+                }
             }
-            LoginRequest requestBody = new LoginRequest(loginField.getText() , passwordField.getText());
-//            ResponseEntity<String> answer = ServerConnectionProvider.getInstance().loginRequest(requestBody);
-            ResponseEntity<String> answer = ServerConnectionProvider.getInstance().loginRequest2(requestBody);
-
-            logger.info("Request was sent");
-
-            User user = new User(loginField.getText(), passwordField.getText());
-            CurrentUser.init(user);
-
-             if(answer.getStatusCode().is2xxSuccessful()){
-                logger.info("User is logged in");
-                DialogProvider.ShowDialog("SUCCESSFUL" , "You are logged in");
-                CurrentUser.setAuthToken(answer.getBody());
-                 System.out.println(answer.getBody());
-
-                //Открываем главное окно
-                Stage applStage = new Stage();
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getResource("/application.fxml"));
-                Parent root = loader.load();
-                applStage.setScene(new Scene(root, 620, 680));
-                applStage.show();
-
-                //Закрываем текущее окно
-                Stage currentStageToClose = (Stage) signUpButton.getScene().getWindow();
-                currentStageToClose.close();
-                return;
-            }
-                 DialogProvider.ShowDialog("ERROR" , "Wrong login or password" , Alert.AlertType.ERROR);
-
         } catch (Exception e) {
             logger.info(e.getMessage());
             System.out.println(e.getMessage());
