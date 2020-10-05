@@ -13,15 +13,21 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import massage.Message;
 import org.springframework.http.ResponseEntity;
 import providers.DialogProvider;
 import providers.ServerConnectionProvider;
 import request.AddChatRequest;
+import request.GetChatRequest;
+import request.SendMessageRequest;
 import response.ChatResponse;
+import response.MessageResponse;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ApplicationControllerImpl implements ApplicationController {
@@ -45,7 +51,7 @@ public class ApplicationControllerImpl implements ApplicationController {
     TextField sendMessageField;
 
     @FXML
-   TextField findUserLogin;
+    TextField findUserLogin;
 
     @FXML
     Button findUserButton;
@@ -82,17 +88,35 @@ public class ApplicationControllerImpl implements ApplicationController {
         chatListView.getItems().clear();
         chatListView.refresh();
         this.selectedChatLogin = newValue;
+
         // сделать этот метод если рабоатет отправка , и сделан метод GET /me/messages
-        //updateChatForUser(newValue);
+        try {
+            updateChatForUser(newValue);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     @Override
     public void send(ActionEvent event) {
         if(!selectedChatLogin.isBlank()){
-            //TODO: CALL SERVERPROVIDER SEND MESSAGE
+            SendMessageRequest sendMessageRequest = new SendMessageRequest();
+            sendMessageRequest.setReceiver(usersListView.getSelectionModel().getSelectedItem());
+            sendMessageRequest.setMessage(sendMessageField.getText());
 
-            //TODO: добавь полученное сообщение в chatListView и потом обязательно сделать у него рефреш
+            ResponseEntity<String> answer = ServerConnectionProvider.getInstance().sendMessage(sendMessageRequest);
+
+            if (answer.getStatusCode().is2xxSuccessful()) {
+                chatListView.getItems().add(sendMessageField.getText());
+                chatListView.refresh();
+//                chatListView.getItems().add(answer.getBody().getMessage());
+//                chatListView.refresh();
+            } else{
+                logger.warn("Response not 0 from server: " + answer.getStatusCode());
+                DialogProvider.ShowDialog("ERROR", "Message doesn't sent", Alert.AlertType.ERROR);
+            }
+
         }
 //        if (usersListView.getSelectionModel().isEmpty()){
 //            logger.info("Send function call: user is empty");
@@ -163,7 +187,7 @@ public class ApplicationControllerImpl implements ApplicationController {
             logger.info("Request sent");
 
             if (answer.getStatusCode().is2xxSuccessful()) {
-               logger.info("Response 0 from server");
+                logger.info("Response 0 from server");
                 usersListView.getItems().add(findUserLogin.getText());
                 usersListView.refresh();
             } else {
@@ -244,34 +268,37 @@ public class ApplicationControllerImpl implements ApplicationController {
 
     @Override
     public void updateChatForUser(String login) throws IOException {
-//        logger.info("Sending 'updateChatForUser' request to server");
-//
-//        List<ServerArgument> argumentsList = new ArrayList<>();
-//        argumentsList.add(new ServerArgument("senderLogin" , CurrentUser.getCurrentUser().getLogin()));
-//        argumentsList.add(new ServerArgument("companionLogin", login));
-//
-//        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("getChat", argumentsList, RequestType.GET);
-//
-//        logger.info("Request was sent");
-//        Gson gson = new Gson();
-//
-//        //TODO
-//        Type listType = new TypeToken<ArrayList<Message>>(){}.getType();
-//        ArrayList<Message> messages = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
-//
-//        chatListView.getItems().clear();
-//
-//        for(Message msg : messages){
-//            DateFormat formatter = new SimpleDateFormat("HH:mm");
-//            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-//            String dateFormatted = formatter.format(msg.getDate().getTime());
-//            chatListView.getItems().add(dateFormatted + " " + msg.getSender() + " : " + msg.getMessage());
-//        }
-//        chatListView.refresh();
-//        CurrentUser.currentChat = login;
-//
-//        int index = chatListView.getItems().size() - 1;
-//        chatListView.scrollTo(index);
+        logger.info("Sending 'updateChatForUser' request to server");
+
+        GetChatRequest request = new GetChatRequest();
+        request.setUser(usersListView.getSelectionModel().getSelectedItem());
+
+        ResponseEntity<List<Message>> answer = ServerConnectionProvider.getInstance().getChat(request);
+
+        logger.info("Request was sent");
+
+        if (answer.getStatusCode().is2xxSuccessful()) {
+            logger.info("Successful");
+            usersListView.getItems().add(findUserLogin.getText());
+            usersListView.refresh();
+            chatListView.getItems().clear();
+
+        for(Message msg : answer.getBody()){
+            DateFormat formatter = new SimpleDateFormat("HH:mm");
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            String dateFormatted = formatter.format(msg.getDate().getTime());
+            chatListView.getItems().add(dateFormatted + " " + msg.getSender() + " : " + msg.getMessage());
+        }
+        chatListView.refresh();
+        CurrentUser.currentChat = login;
+
+        int index = chatListView.getItems().size() - 1;
+        chatListView.scrollTo(index);
+        } else {
+            logger.warn("Error: " + answer.getStatusCode());
+            DialogProvider.ShowDialog("ERROR", "Loading error", Alert.AlertType.ERROR);
+
+        }
     }
 
     @Override

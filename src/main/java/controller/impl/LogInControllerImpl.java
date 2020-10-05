@@ -2,7 +2,6 @@ package controller.impl;
 
 import controller.LogInController;
 import data.CurrentUser;
-import data.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,11 +14,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.springframework.http.ResponseEntity;
 import providers.DialogProvider;
-import providers.NavigationProvider;
 import providers.ServerConnectionProvider;
 import request.LoginRequest;
-import response.JwtResponse;
-import response.LoginResponse;
 
 
 import java.io.IOException;

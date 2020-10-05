@@ -1,17 +1,17 @@
-package request;
+package response;
 
 import javax.validation.constraints.NotBlank;
 
-public class SendMessageRequest {
+public class MessageResponse {
     @NotBlank
     private String receiver;
     @NotBlank
     private String message;
 
-    public SendMessageRequest() {
+    public MessageResponse() {
     }
 
-    public SendMessageRequest(@NotBlank String receiver, @NotBlank String message) {
+    public MessageResponse(@NotBlank String receiver, @NotBlank String message) {
         this.receiver = receiver;
         this.message = message;
     }

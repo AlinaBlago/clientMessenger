@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.springframework.http.ResponseEntity;
 import providers.DialogProvider;
 import providers.ServerConnectionProvider;
@@ -55,8 +56,9 @@ public class LogUpControllerImpl implements LogUpController {
             ResponseEntity<SignupResponse> answer = ServerConnectionProvider.getInstance().signUpRequest(requestBody);
             logger.info("Request was sent");
 
-            if(answer.getStatusCode().is2xxSuccessful() && answer.getBody().isStatus()){
+            if(answer.getStatusCode().is2xxSuccessful()){
                 DialogProvider.ShowDialog("SUCCESSFUL" , "New user created");
+                ((Stage) signUpButton.getScene().getWindow()).close();
             }else{
                 DialogProvider.ShowDialog("ERROR" , "Something went wrong" , Alert.AlertType.ERROR);
             }
