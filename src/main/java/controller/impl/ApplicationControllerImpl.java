@@ -1,11 +1,8 @@
 package controller.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import controller.ApplicationController;
 import data.CurrentUser;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,7 +10,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import massage.Message;
 import org.springframework.http.ResponseEntity;
 import providers.DialogProvider;
 import providers.ServerConnectionProvider;
@@ -24,7 +20,6 @@ import response.ChatResponse;
 import response.MessageResponse;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -56,6 +51,9 @@ public class ApplicationControllerImpl implements ApplicationController {
     @FXML
     Button findUserButton;
 
+    @FXML
+    Button profileButton;
+
     private String selectedChatLogin;
 
     @Override
@@ -66,6 +64,8 @@ public class ApplicationControllerImpl implements ApplicationController {
 
         sendButton.setOnAction(this::send);
 
+        profileButton.setOnAction(this::onUserProfileClick);
+
         usersListView.getSelectionModel().selectedItemProperty().addListener(this::usersListViewChanged);
 
         bindThreadCheckNewMessages();
@@ -73,7 +73,7 @@ public class ApplicationControllerImpl implements ApplicationController {
         try {
             loadUserChats();
         } catch (IOException e) {
-            // TODO
+            logger.info("Chat doesnt loaded");
             e.printStackTrace();
         }
 
@@ -83,13 +83,11 @@ public class ApplicationControllerImpl implements ApplicationController {
     @FXML
     @Override
     public void usersListViewChanged(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        //TODO: GET /me/messages (get all messages with that human)
-
         chatListView.getItems().clear();
         chatListView.refresh();
+
         this.selectedChatLogin = newValue;
 
-        // сделать этот метод если рабоатет отправка , и сделан метод GET /me/messages
         try {
             updateChatForUser(newValue);
         } catch (IOException e) {
@@ -113,63 +111,10 @@ public class ApplicationControllerImpl implements ApplicationController {
 //                chatListView.getItems().add(answer.getBody().getMessage());
 //                chatListView.refresh();
             } else{
-                logger.warn("Response not 0 from server: " + answer.getStatusCode());
+                logger.warn("Response not 200 from server: " + answer.getStatusCode());
                 DialogProvider.ShowDialog("ERROR", "Message doesn't sent", Alert.AlertType.ERROR);
             }
-
         }
-//        if (usersListView.getSelectionModel().isEmpty()){
-//            logger.info("Send function call: user is empty");
-//            return;
-//        }
-//        else{
-//            String selectedUser = usersListView.getSelectionModel().getSelectedItem();
-//            if(sendMessageField.getText().length() > 0){
-//                boolean isExistsOnlyOfSpace = true;
-//
-//                for(Character symbol : sendMessageField.getText().toCharArray()){
-//                    if(!symbol.equals(' ')){
-//                        isExistsOnlyOfSpace = false;
-//                        break;
-//                    }
-//                }
-//                if(isExistsOnlyOfSpace){
-//                    logger.info("Entered message text consist only of space");
-//                    return;
-//                } else {
-//                    try {
-//                        logger.info("Staring send 'sendMessage' to server");
-//
-//                        List<ServerArgument> argumentsList = new ArrayList<>();
-//                        argumentsList.add(new ServerArgument("senderLogin", CurrentUser.getCurrentUser().getLogin()));
-//                        argumentsList.add(new ServerArgument("receiverLogin", usersListView.getSelectionModel().getSelectedItem()));
-//                        argumentsList.add(new ServerArgument("message", sendMessageField.getText().replaceAll(" " , "%20")));
-//
-//                        ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("sendMessage" ,argumentsList, RequestType.GET);
-//                        String mesg = sendMessageField.getText().replaceAll(" ", "%20");
-//
-//                        logger.info("Request 'sendMessage' sent" );
-//
-//                        DateFormat formatter = new SimpleDateFormat("HH:mm");
-//                        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-//                        String dateFormatted = formatter.format(System.currentTimeMillis());
-//                        chatListView.getItems().add(dateFormatted + " " + CurrentUser.getCurrentUser().getLogin() + ": " + sendMessageField.getText());
-//
-//                        int index = chatListView.getItems().size() - 1;
-//                        chatListView.scrollTo(index);
-//
-//                        sendMessageField.clear();
-//
-//                    } catch (Exception e){
-//                        logger.warn(e.getMessage());
-//                        System.out.println(e.getMessage());
-//                    }
-//                }
-//            } else {
-//                return;
-//            }
-//            logger.info("Entered message text less than 0 symbols");
-//        }
     }
 
     @FXML
@@ -273,7 +218,7 @@ public class ApplicationControllerImpl implements ApplicationController {
         GetChatRequest request = new GetChatRequest();
         request.setUser(usersListView.getSelectionModel().getSelectedItem());
 
-        ResponseEntity<List<Message>> answer = ServerConnectionProvider.getInstance().getChat(request);
+        ResponseEntity<List<MessageResponse>> answer = ServerConnectionProvider.getInstance().getChat(request);
 
         logger.info("Request was sent");
 
@@ -283,11 +228,11 @@ public class ApplicationControllerImpl implements ApplicationController {
             usersListView.refresh();
             chatListView.getItems().clear();
 
-        for(Message msg : answer.getBody()){
+        for(MessageResponse msg : answer.getBody()){
             DateFormat formatter = new SimpleDateFormat("HH:mm");
             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
             String dateFormatted = formatter.format(msg.getDate().getTime());
-            chatListView.getItems().add(dateFormatted + " " + msg.getSender() + " : " + msg.getMessage());
+            chatListView.getItems().add(dateFormatted + " " + msg.getSenderLogin() + " : " + msg.getMessage());
         }
         chatListView.refresh();
         CurrentUser.currentChat = login;
@@ -320,6 +265,20 @@ public class ApplicationControllerImpl implements ApplicationController {
 
         usersListView.getItems().addAll(chats);
         usersListView.refresh();
+    }
+
+    @FXML
+    private void onUserProfileClick(ActionEvent event){
+
+        Stage userProfile = new Stage();
+        Parent userProfileSceneRoot = null;
+        try {
+            userProfileSceneRoot = FXMLLoader.load(ApplicationControllerImpl.this.getClass().getResource("/userProfile2.fxml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        userProfile.setScene(new Scene(userProfileSceneRoot, 620, 700));
+        userProfile.show();
     }
 
     @FXML

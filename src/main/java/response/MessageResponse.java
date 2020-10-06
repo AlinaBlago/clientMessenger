@@ -1,27 +1,21 @@
 package response;
 
+import massage.Message;
+
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 public class MessageResponse {
-    @NotBlank
-    private String receiver;
-    @NotBlank
+    private Long chatId;
+    private String senderLogin;
+    private Date date;
     private String message;
 
     public MessageResponse() {
     }
 
-    public MessageResponse(@NotBlank String receiver, @NotBlank String message) {
-        this.receiver = receiver;
+    public MessageResponse(String message) {
         this.message = message;
-    }
-
-    public String getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(String receiver) {
-        this.receiver = receiver;
     }
 
     public String getMessage() {
@@ -32,11 +26,15 @@ public class MessageResponse {
         this.message = message;
     }
 
-    @Override
-    public String toString() {
-        return "SendMessageRequest{" +
-                "receiver=" + receiver +
-                ", message='" + message + '\'' +
-                '}';
+    public Long getChatId() {
+        return chatId;
+    }
+
+    public String getSenderLogin() {
+        return senderLogin;
+    }
+
+    public Date getDate() {
+        return date;
     }
 }

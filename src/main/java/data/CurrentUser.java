@@ -9,6 +9,7 @@ public class CurrentUser {
     private static String changePasswordToken;
     private static String authToken;
     private static String username;
+    private static String email;
     private static final Logger logger = LoggerFactory.getLogger(CurrentUser.class);
 
     public static User getCurrentUser() {
@@ -45,5 +46,13 @@ public class CurrentUser {
 
     public static void setUsername(String username) {
         CurrentUser.username = username;
+    }
+
+    public static String getEmail() {
+        return email;
+    }
+
+    public static void setEmail(String email) {
+        CurrentUser.email = email;
     }
 }

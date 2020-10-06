@@ -75,7 +75,7 @@ public class LogInControllerImpl implements LogInController {
 
                     ((Stage) loginButton.getScene().getWindow()).close();
                    // NavigationProvider.NavigateToMainForm((Stage)signUpButton.getScene().getWindow());
-                }else{
+                } else{
                     DialogProvider.ShowDialog("ERROR", "Wrong login or password", Alert.AlertType.ERROR);
                 }
             }
