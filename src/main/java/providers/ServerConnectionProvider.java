@@ -119,4 +119,22 @@ public class ServerConnectionProvider {
 
         return restTempl.exchange(url, HttpMethod.PATCH, new HttpEntity<>(request, headers), UserResponse.class);
     }
+
+    public ResponseEntity<String> getTokenForChangingEmail(GetTokenForUpdateEmailRequest request) {
+        var url = serverURL + "users/me/email";
+        RestTemplate restTempl = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", CurrentUser.getAuthToken());
+
+        return restTempl.exchange(url, HttpMethod.POST, new HttpEntity<>(request, headers), String.class);
+    }
+
+    public ResponseEntity<String> changeEmail(ChangeEmailRequest request) {
+        var url = serverURL + "users/me/email/change";
+        RestTemplate restTempl = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", CurrentUser.getAuthToken());
+
+        return restTempl.exchange(url, HttpMethod.POST, new HttpEntity<>(request, headers), String.class);
+    }
 }

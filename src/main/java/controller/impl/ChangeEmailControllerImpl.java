@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import org.springframework.http.ResponseEntity;
 import providers.DialogProvider;
 import providers.ServerConnectionProvider;
-import response.UserResponse;
+import request.GetTokenForUpdateEmailRequest;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,11 +29,37 @@ public class ChangeEmailControllerImpl implements ChangeEmailController {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        submitButton.setOnAction(this::onEmailClick);
+        submitButton.setOnAction(this::onSubmitClick);
     }
 
     @FXML
-    private void onEmailClick(ActionEvent event){
+    private void onSubmitClick(ActionEvent event){
+        if (emailField.getText().length() == 0){
+            DialogProvider.ShowDialog("WARNING" , "Wrong Login");
+        }
+
+        GetTokenForUpdateEmailRequest requestBody = new GetTokenForUpdateEmailRequest(emailField.getText());
+        ResponseEntity<String> answer = ServerConnectionProvider.getInstance().getTokenForChangingEmail(requestBody);
+        logger.info("Request was sent");
+
+        CurrentUser.setChangeEmailToken(answer.getBody());
+
+        if(answer.getStatusCode().is2xxSuccessful()){
+            CurrentUser.setEmail(emailField.getText());
+            DialogProvider.ShowDialog("Successful" , "Token sent for your mail", Alert.AlertType.INFORMATION);
+
+            openNewWindow();
+
+            Stage currentStageToClose = (Stage) submitButton.getScene().getWindow();
+            currentStageToClose.close();
+            return;
+        }else{
+            DialogProvider.ShowDialog("ERROR" , "Something went wrong" , Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void openNewWindow(){
         Stage emailStage = new Stage();
         Parent changeEmailSceneRoot = null;
         try {

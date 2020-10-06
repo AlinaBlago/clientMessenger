@@ -7,6 +7,7 @@ public class CurrentUser {
     private static User currentUser;
     public static String currentChat;
     private static String changePasswordToken;
+    private static String changeEmailToken;
     private static String authToken;
     private static String username;
     private static String email;
@@ -30,6 +31,14 @@ public class CurrentUser {
 
     public static void setChangePasswordToken(String changePasswordToken) {
         CurrentUser.changePasswordToken = changePasswordToken;
+    }
+
+    public static String getChangeEmailToken() {
+        return changeEmailToken;
+    }
+
+    public static void setChangeEmailToken(String changeEmailToken) {
+        CurrentUser.changeEmailToken = changeEmailToken;
     }
 
     public static String getAuthToken() {
