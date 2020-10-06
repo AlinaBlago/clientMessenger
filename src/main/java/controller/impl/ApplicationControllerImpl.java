@@ -106,6 +106,7 @@ public class ApplicationControllerImpl implements ApplicationController {
             ResponseEntity<String> answer = ServerConnectionProvider.getInstance().sendMessage(sendMessageRequest);
 
             if (answer.getStatusCode().is2xxSuccessful()) {
+                sendMessageField.clear();
                 chatListView.getItems().add(sendMessageField.getText());
                 chatListView.refresh();
 //                chatListView.getItems().add(answer.getBody().getMessage());
@@ -117,6 +118,7 @@ public class ApplicationControllerImpl implements ApplicationController {
         }
     }
 
+    //TODO
     @FXML
     @Override
     public void findUser(ActionEvent event) {
@@ -134,7 +136,7 @@ public class ApplicationControllerImpl implements ApplicationController {
             if (answer.getStatusCode().is2xxSuccessful()) {
                 logger.info("Response 0 from server");
                 usersListView.getItems().add(findUserLogin.getText());
-                usersListView.refresh();
+                findUserLogin.clear();
             } else {
                 logger.warn("Response not 0 from server: " + answer.getStatusCode());
                 DialogProvider.ShowDialog("ERROR", "User not found", Alert.AlertType.ERROR);
@@ -224,9 +226,9 @@ public class ApplicationControllerImpl implements ApplicationController {
 
         if (answer.getStatusCode().is2xxSuccessful()) {
             logger.info("Successful");
-            usersListView.getItems().add(findUserLogin.getText());
-            usersListView.refresh();
-            chatListView.getItems().clear();
+//            usersListView.getItems().add(findUserLogin.getText());
+//            usersListView.refresh();
+//            chatListView.getItems().clear();
 
         for(MessageResponse msg : answer.getBody()){
             DateFormat formatter = new SimpleDateFormat("HH:mm");

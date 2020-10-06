@@ -50,6 +50,9 @@ public class UserProfileControllerImpl implements UserProfileController {
     @FXML
     Button changeEmailButton;
 
+    @FXML
+    Button deleteButton;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -57,6 +60,7 @@ public class UserProfileControllerImpl implements UserProfileController {
         changeEmailButton.setOnAction(this::onChangeEmailClick);
         submitPasswordButton.setOnAction(this::onChangePasswordClick);
         submitLoginPassword.setOnAction(this::onChangeLoginClick);
+        deleteButton.setOnAction(this::onDeleteClick);
     }
 
     public void setCurrentUserInfoToWindow() {
@@ -124,6 +128,20 @@ public class UserProfileControllerImpl implements UserProfileController {
         }
         changeEmail.setScene(new Scene(changeEmailSceneRoot, 620, 550));
         changeEmail.show();
+    }
+
+    @FXML
+    private void onDeleteClick(ActionEvent event){
+        logger.info("Request was sent");
+        ResponseEntity<String> answer = ServerConnectionProvider.getInstance().deleteAccount();
+        logger.info("Answer received");
+
+        if (answer.getStatusCode().is2xxSuccessful()) {
+            logger.info("User's account deleted");
+            DialogProvider.ShowDialog("INFORMATION", "Account deleted", Alert.AlertType.INFORMATION);
+        } else {
+            DialogProvider.ShowDialog("INFORMATION", "Account doesn't deleted", Alert.AlertType.INFORMATION);
+        }
     }
 
 

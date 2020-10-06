@@ -56,11 +56,9 @@ public class LogInControllerImpl implements LogInController {
                 ResponseEntity<String> answer = ServerConnectionProvider.getInstance().loginRequest(requestBody);
                 logger.info("Answer received");
 
-                if (answer.getStatusCode().is2xxSuccessful()) {
+                 if(answer.getStatusCode().is2xxSuccessful()) {
                     CurrentUser.setUsername(loginField.getText());
-
                     logger.info("User is logged in");
-
                     CurrentUser.setAuthToken(answer.getHeaders().get("Authorization").get(0));
                     //RETURN LOGIN ON SERVER WHEN LOGIN
                     Stage applStage = new Stage();
@@ -74,12 +72,11 @@ public class LogInControllerImpl implements LogInController {
                     applStage.show();
 
                     ((Stage) loginButton.getScene().getWindow()).close();
-                   // NavigationProvider.NavigateToMainForm((Stage)signUpButton.getScene().getWindow());
-                } else{
-                    DialogProvider.ShowDialog("ERROR", "Wrong login or password", Alert.AlertType.ERROR);
+                    // NavigationProvider.NavigateToMainForm((Stage)signUpButton.getScene().getWindow());
                 }
             }
         } catch (Exception e) {
+            DialogProvider.ShowDialog("ERROR", "Wrong login or password", Alert.AlertType.ERROR);
             logger.info(e.getMessage());
             System.out.println(e.getMessage());
         }

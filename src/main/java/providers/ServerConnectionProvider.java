@@ -137,4 +137,13 @@ public class ServerConnectionProvider {
 
         return restTempl.exchange(url, HttpMethod.POST, new HttpEntity<>(request, headers), String.class);
     }
+
+    public ResponseEntity<String> deleteAccount() {
+        var url = serverURL + "users/me";
+        RestTemplate restTempl = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", CurrentUser.getAuthToken());
+
+        return restTempl.exchange(url, HttpMethod.DELETE, new HttpEntity<>(headers), String.class);
+    }
 }
