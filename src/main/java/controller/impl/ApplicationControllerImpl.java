@@ -18,6 +18,7 @@ import request.GetChatRequest;
 import request.SendMessageRequest;
 import response.ChatResponse;
 import response.MessageResponse;
+import util.FxUtilTest;
 
 import java.io.IOException;
 import java.net.URL;
@@ -46,7 +47,7 @@ public class ApplicationControllerImpl implements ApplicationController {
     TextField sendMessageField;
 
     @FXML
-    TextField findUserLogin;
+    ComboBox<String> findUserComboBox;
 
     @FXML
     Button findUserButton;
@@ -122,21 +123,22 @@ public class ApplicationControllerImpl implements ApplicationController {
     @FXML
     @Override
     public void findUser(ActionEvent event) {
-        if (findUserLogin.getText().length() == 0){
+        if (findUserComboBox.getEditor().getLength() == 0){
             return;
         }
         try {
             logger.info("Start send 'findUser' to server");
 
+            FxUtilTest.getComboBoxValue(findUserComboBox);
             AddChatRequest request = new AddChatRequest();
-            request.setUsername(findUserLogin.getText());
+            request.setUsername(findUserComboBox.getEditor().getText());
             ResponseEntity<ChatResponse> answer = ServerConnectionProvider.getInstance().addChat(request);
             logger.info("Request sent");
 
             if (answer.getStatusCode().is2xxSuccessful()) {
                 logger.info("Response 0 from server");
-                usersListView.getItems().add(findUserLogin.getText());
-                findUserLogin.clear();
+                usersListView.getItems().add(findUserComboBox.getEditor().getText());
+                findUserComboBox.getEditor().clear();
             } else {
                 logger.warn("Response not 0 from server: " + answer.getStatusCode());
                 DialogProvider.ShowDialog("ERROR", "User not found", Alert.AlertType.ERROR);

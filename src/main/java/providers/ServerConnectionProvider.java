@@ -28,13 +28,11 @@ public class ServerConnectionProvider {
     private ServerConnectionProvider() {
     }
 
-
     public ResponseEntity<SignupResponse> signUpRequest(SignupRequest requestEntity) {
         var url = serverURL + "users";
         RestTemplate restTempl = new RestTemplate();
         return restTempl.postForEntity(url, requestEntity, SignupResponse.class);
     }
-
 
     public ResponseEntity<String> loginRequest(LoginRequest requestEntity) {
         var url = serverURL + "login";

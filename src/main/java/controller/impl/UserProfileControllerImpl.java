@@ -73,7 +73,7 @@ public class UserProfileControllerImpl implements UserProfileController {
 
         if (answer.getStatusCode().is2xxSuccessful()) {
             String text = answer.getBody().getEmail();
-            dateLabel.setText("Дата создания аккаунта: " + answer.getBody().getCreatedAt());
+            dateLabel.setText("Дата создания аккаунта: " + answer.getBody().getCreatedAt().toString());
             emailLabel.setText(text);
             logger.info("User's info got");
         } else {
