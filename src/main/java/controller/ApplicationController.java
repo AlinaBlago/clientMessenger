@@ -16,7 +16,7 @@ public interface ApplicationController extends Initializable {
 
     void send(ActionEvent event);
 
-  void findUser(ActionEvent event);
+    void findUser(ActionEvent event);
 
     void setCurrentUserNameToWindow();
 

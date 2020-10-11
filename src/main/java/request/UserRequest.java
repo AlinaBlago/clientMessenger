@@ -1,16 +1,13 @@
 package request;
 
-import javax.validation.constraints.NotBlank;
-
-public class SendChangePasswordTokenRequest {
-    @NotBlank
+public class UserRequest {
     private String username;
 
-    SendChangePasswordTokenRequest() {}
+    public UserRequest() {
+    }
 
-    public SendChangePasswordTokenRequest(@NotBlank String username) {
+    public UserRequest(String username) {
         this.username = username;
-
     }
 
     public String getUsername() {

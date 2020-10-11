@@ -29,13 +29,14 @@ public class ChangeEmailControllerImpl implements ChangeEmailController {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        submitButton.setOnAction(this::onSubmitClick);
+        submitButton.setOnAction(this::changePassword);
     }
 
+    @Override
     @FXML
-    private void onSubmitClick(ActionEvent event){
+    public void changePassword(ActionEvent event){
         if (emailField.getText().length() == 0){
-            DialogProvider.ShowDialog("WARNING" , "Wrong Login");
+            DialogProvider.showDialog("WARNING" , "Wrong Login");
         }
 
         GetTokenForUpdateEmailRequest requestBody = new GetTokenForUpdateEmailRequest(emailField.getText());
@@ -46,7 +47,7 @@ public class ChangeEmailControllerImpl implements ChangeEmailController {
 
         if(answer.getStatusCode().is2xxSuccessful()){
             CurrentUser.setEmail(emailField.getText());
-            DialogProvider.ShowDialog("Successful" , "Token sent for your mail", Alert.AlertType.INFORMATION);
+            DialogProvider.showDialog("Successful" , "Token sent for your mail", Alert.AlertType.INFORMATION , false);
 
             openNewWindow();
 
@@ -54,7 +55,7 @@ public class ChangeEmailControllerImpl implements ChangeEmailController {
             currentStageToClose.close();
             return;
         }else{
-            DialogProvider.ShowDialog("ERROR" , "Something went wrong" , Alert.AlertType.ERROR);
+            DialogProvider.showDialog("ERROR" , "Something went wrong" , Alert.AlertType.ERROR , false);
         }
     }
 

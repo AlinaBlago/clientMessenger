@@ -4,7 +4,6 @@ import controller.ChangePasswordController;
 import data.CurrentUser;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -14,7 +13,7 @@ import javafx.stage.Stage;
 import org.springframework.http.ResponseEntity;
 import providers.DialogProvider;
 import providers.ServerConnectionProvider;
-import request.SendChangePasswordTokenRequest;
+import request.UserRequest;
 import response.ChangePasswordResponse;
 
 import java.io.IOException;
@@ -31,16 +30,17 @@ public class ChangePasswordControllerImpl implements ChangePasswordController {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        submitButton.setOnAction(this::onSubmitClick);
+        submitButton.setOnAction(this::changePassword);
     }
 
+    @Override
     @FXML
-    private void onSubmitClick(ActionEvent event){
+    public void changePassword(ActionEvent event){
         if (loginField.getText().length() == 0){
-            DialogProvider.ShowDialog("WARNING" , "Wrong Login");
+            DialogProvider.showDialog("WARNING" , "Wrong Login");
         }
 
-        SendChangePasswordTokenRequest requestBody = new SendChangePasswordTokenRequest(loginField.getText());
+        UserRequest requestBody = new UserRequest(loginField.getText());
         ResponseEntity<ChangePasswordResponse> answer = ServerConnectionProvider.getInstance().getToken(requestBody);
         logger.info("Request was sent");
 
@@ -49,7 +49,7 @@ public class ChangePasswordControllerImpl implements ChangePasswordController {
         System.out.println(CurrentUser.getUsername());
 
         if(answer.getStatusCode().is2xxSuccessful()){
-        DialogProvider.ShowDialog("Successful" , "Token sent for your mail", Alert.AlertType.INFORMATION);
+        DialogProvider.showDialog("Successful" , "Token sent for your mail", Alert.AlertType.INFORMATION , false);
 
         openNewWindow();
 
@@ -57,13 +57,11 @@ public class ChangePasswordControllerImpl implements ChangePasswordController {
         currentStageToClose.close();
         return;
     }else{
-        DialogProvider.ShowDialog("ERROR" , "Something went wrong" , Alert.AlertType.ERROR);
+        DialogProvider.showDialog("ERROR" , "Something went wrong" , Alert.AlertType.ERROR , false);
     }
 }
 
     public void openNewWindow(){
-        Stage changePassword = new Stage();
-        FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/submitChangePassword.fxml"));
         Parent root = null;
         try {

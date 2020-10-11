@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import providers.DialogProvider;
 import providers.ServerConnectionProvider;
 import request.ChangeEmailRequest;
-import request.ChangePasswordRequest;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -26,23 +25,24 @@ public class SubmitChangeEmailImpl implements SubmitChangeEmail {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        submitButton.setOnAction(this::onSubmitClick);
+        submitButton.setOnAction(this::changeEmail);
     }
 
+    @Override
     @FXML
-    private void onSubmitClick(ActionEvent event) {
+    public void changeEmail(ActionEvent event) {
         ChangeEmailRequest requestBody = new ChangeEmailRequest(tokenField.getText(), CurrentUser.getEmail());
         ResponseEntity<String> answer = ServerConnectionProvider.getInstance().changeEmail(requestBody);
         logger.info("Request was sent");
 
         if (answer.getStatusCode().is2xxSuccessful()) {
-            DialogProvider.ShowDialog("Successful", "Email changed", Alert.AlertType.INFORMATION);
+            DialogProvider.showDialog("Successful", "Email changed", Alert.AlertType.INFORMATION , false);
 
             Stage currentStageToClose = (Stage) submitButton.getScene().getWindow();
             currentStageToClose.close();
             return;
         } else {
-            DialogProvider.ShowDialog("ERROR", "Something went wrong", Alert.AlertType.ERROR);
+            DialogProvider.showDialog("ERROR", "Something went wrong", Alert.AlertType.ERROR , false);
         }
     }
 

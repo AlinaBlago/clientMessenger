@@ -13,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import providers.DialogProvider;
 import providers.ServerConnectionProvider;
 import request.ChangePasswordRequest;
-import request.SendChangePasswordTokenRequest;
-import response.ChangePasswordResponse;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -34,26 +32,25 @@ public class SubmitChangePasswordImpl implements SubmitChangePassword {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        submitButton.setOnAction(this::onSubmitClick);
+        submitButton.setOnAction(this::changePassword);
     }
 
+    @Override
     @FXML
-    private void onSubmitClick(ActionEvent event) {
+    public void changePassword(ActionEvent event) {
         System.out.println(CurrentUser.getUsername());
         ChangePasswordRequest requestBody = new ChangePasswordRequest(codeField.getText(), passwordField.getText(), CurrentUser.getUsername());
         ResponseEntity<String> answer = ServerConnectionProvider.getInstance().changePassword(requestBody);
         logger.info("Request was sent");
-        System.out.println( codeField.getText());
-        System.out.println(passwordField.getText());
 
         if (answer.getStatusCode().is2xxSuccessful()) {
-            DialogProvider.ShowDialog("Successful", "Password changed", Alert.AlertType.INFORMATION);
+            DialogProvider.showDialog("Successful", "Password changed", Alert.AlertType.INFORMATION , false);
 
             Stage currentStageToClose = (Stage) submitButton.getScene().getWindow();
             currentStageToClose.close();
             return;
         } else {
-            DialogProvider.ShowDialog("ERROR", "Something went wrong", Alert.AlertType.ERROR);
+            DialogProvider.showDialog("ERROR", "Something went wrong", Alert.AlertType.ERROR , false);
         }
     }
 }

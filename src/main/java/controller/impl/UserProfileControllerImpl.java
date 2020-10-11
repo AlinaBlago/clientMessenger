@@ -2,6 +2,7 @@ package controller.impl;
 
 import controller.UserProfileController;
 import data.CurrentUser;
+import exceptions.ValidationException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,8 +13,10 @@ import javafx.stage.Stage;
 import org.springframework.http.ResponseEntity;
 import providers.DialogProvider;
 import providers.ServerConnectionProvider;
-import request.UpdateUserRequest;
+import request.UpdateUserLoginRequest;
+import request.UpdateUserPasswordRequest;
 import response.UserResponse;
+import runner.Main;
 
 import java.io.IOException;
 import java.net.URL;
@@ -58,9 +61,9 @@ public class UserProfileControllerImpl implements UserProfileController {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setCurrentUserInfoToWindow();
         changeEmailButton.setOnAction(this::onChangeEmailClick);
-        submitPasswordButton.setOnAction(this::onChangePasswordClick);
-        submitLoginPassword.setOnAction(this::onChangeLoginClick);
-        deleteButton.setOnAction(this::onDeleteClick);
+        submitPasswordButton.setOnAction(this::changePassword);
+        submitLoginPassword.setOnAction(this::changeLogin);
+        deleteButton.setOnAction(this::delete);
     }
 
     public void setCurrentUserInfoToWindow() {
@@ -77,44 +80,86 @@ public class UserProfileControllerImpl implements UserProfileController {
             emailLabel.setText(text);
             logger.info("User's info got");
         } else {
-            DialogProvider.ShowDialog("INFORMATION", "Email doesn't load", Alert.AlertType.INFORMATION);
+            DialogProvider.showDialog("INFORMATION", "Email doesn't load", Alert.AlertType.INFORMATION , false);
         }
     }
 
+    @Override
     @FXML
-    public void onChangePasswordClick(ActionEvent event){
-        UpdateUserRequest request = new UpdateUserRequest();
-        request.setPassword(passwordField.getText());
-        request.setUsername(null);
+    public void changePassword(ActionEvent event){
+        UpdateUserPasswordRequest request = new UpdateUserPasswordRequest();
 
-        logger.info("Request was sent");
-        ResponseEntity<UserResponse> answer = ServerConnectionProvider.getInstance().updateUser(request);
-        logger.info("Answer received");
+            if ((validatePasswordField())){
+                if (validatePasswordEquals()) {
+                    request.setOldPassword(oldPasswordField.getText());
+                    request.setPassword(passwordField.getText());
 
-        if (answer.getStatusCode().is2xxSuccessful()) {
-            logger.info("User's password changed");
-            DialogProvider.ShowDialog("INFORMATION", "Password changed", Alert.AlertType.INFORMATION);
-        } else {
-            DialogProvider.ShowDialog("INFORMATION", "Password doesn't changed", Alert.AlertType.INFORMATION);
-        }
+                    logger.info("Request was sent");
+                    ResponseEntity<UserResponse> answer = ServerConnectionProvider.getInstance().updateUserPassword(request);
+                    logger.info("Answer received");
+
+                    if (answer.getStatusCode().is2xxSuccessful()) {
+                        oldPasswordField.clear();
+                        passwordField.clear();
+                        submitPasswordField.clear();
+                        logger.info("User's password changed");
+                        DialogProvider.showDialog("INFORMATION", "Password changed", Alert.AlertType.INFORMATION , false);
+                    } else {
+                        DialogProvider.showDialog("INFORMATION", "Password doesn't changed", Alert.AlertType.INFORMATION , false);
+                    }
+                } else {
+                    logger.info("Fields aren't validate!");
+                    DialogProvider.showDialog("WARNING", "Invalid password!", Alert.AlertType.WARNING, false);
+                }
+            } else {
+                    logger.info("Fields aren't validate!");
+                    DialogProvider.showDialog("WARNING", "Invalid password!", Alert.AlertType.WARNING , false);
+                }
     }
 
+    @Override
     @FXML
-    public void onChangeLoginClick(ActionEvent event){
-        UpdateUserRequest request = new UpdateUserRequest();
-        request.setPassword(null);
-        request.setUsername(loginField.getText());
+    public void changeLogin(ActionEvent event)  {
+        UpdateUserLoginRequest request = new UpdateUserLoginRequest();
+            if (validateLoginField()){
+                request.setUsername(loginField.getText());
 
-        logger.info("Request was sent");
-        ResponseEntity<UserResponse> answer = ServerConnectionProvider.getInstance().updateUser(request);
-        logger.info("Answer received");
+                logger.info("Request was sent");
+                ResponseEntity<UserResponse> answer = ServerConnectionProvider.getInstance().updateUserLogin(request);
+                logger.info("Answer received");
+                if (answer.getStatusCode().is2xxSuccessful()) {
+                    loginField.clear();
+                    logger.info("User's login changed");
 
-        if (answer.getStatusCode().is2xxSuccessful()) {
-            logger.info("User's login changed");
-            DialogProvider.ShowDialog("INFORMATION", "Login changed", Alert.AlertType.INFORMATION);
-        } else {
-            DialogProvider.ShowDialog("INFORMATION", "Login doesn't changed", Alert.AlertType.INFORMATION);
-        }
+                    DialogProvider.showDialog("INFORMATION", "Login changed", Alert.AlertType.INFORMATION , false);
+
+                    logger.info("Logout command");
+                    CurrentUser.logOut();
+
+                    Stage stageToClose = (Stage) deleteButton.getScene().getWindow();
+                    stageToClose.close();
+
+                    Main.StopThread();
+
+                    Stage mainStage = new Stage();
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(getClass().getResource("/logIn.fxml"));
+                    Parent root = null;
+                    try {
+                        root = loader.load();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    mainStage.setScene(new Scene(root, 620, 680));
+                    mainStage.show();
+
+                } else {
+                    DialogProvider.showDialog("INFORMATION", "Login doesn't changed", Alert.AlertType.INFORMATION , false);
+                }
+            } else {
+                logger.info("Fields aren't validate!");
+                DialogProvider.showDialog("WARNING", "Invalid login!", Alert.AlertType.WARNING, false);
+            }
     }
 
     @FXML
@@ -131,18 +176,55 @@ public class UserProfileControllerImpl implements UserProfileController {
     }
 
     @FXML
-    private void onDeleteClick(ActionEvent event){
+    public void delete(ActionEvent event){
         logger.info("Request was sent");
         ResponseEntity<String> answer = ServerConnectionProvider.getInstance().deleteAccount();
         logger.info("Answer received");
 
         if (answer.getStatusCode().is2xxSuccessful()) {
             logger.info("User's account deleted");
-            DialogProvider.ShowDialog("INFORMATION", "Account deleted", Alert.AlertType.INFORMATION);
+
+            //AWAIT!!!!!!!!!!
+            DialogProvider.showDialog("INFORMATION", "Account deleted", Alert.AlertType.INFORMATION , false);
+
+            ((Stage)deleteButton.getScene().getWindow()).close();
+            Stage.getWindows().forEach(win -> {((Stage)(win.getScene().getWindow())).close();});
+
+            Stage applStage = new Stage();
+            Parent applSceneRoot = null;
+            try {
+                applSceneRoot = FXMLLoader.load(UserProfileControllerImpl.this.getClass().getResource("/login.fxml"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            applStage.setScene(new Scene(applSceneRoot, 620, 680));
+            applStage.show();
         } else {
-            DialogProvider.ShowDialog("INFORMATION", "Account doesn't deleted", Alert.AlertType.INFORMATION);
+            DialogProvider.showDialog("INFORMATION", "Account doesn't deleted", Alert.AlertType.INFORMATION , false);
         }
     }
 
+    private boolean validateLoginField() {
+        if (loginField.getText().length() < 4 && loginField.getText().equals(CurrentUser.getUsername())) {
+            return false;
+        } else
+            return true;
+    }
+
+    private boolean validatePasswordEquals() {
+        if (passwordField.getText().equals(oldPasswordField.getText())) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean validatePasswordField() {
+        if (oldPasswordField.getText().length() < 4 && passwordField.getText().length() < 4) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
 }

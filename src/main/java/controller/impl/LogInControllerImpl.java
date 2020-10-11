@@ -40,13 +40,14 @@ public class LogInControllerImpl implements LogInController {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        loginButton.setOnAction(this::onLoginClick);
-        signUpButton.setOnAction(this::onSignUpClick);
+        loginButton.setOnAction(this::login);
+        signUpButton.setOnAction(this::signUp);
         changePasswordButton.setOnAction(this::onChangePasswordClick);
     }
 
+    @Override
     @FXML
-    private void onLoginClick(ActionEvent event) {
+    public void login(ActionEvent event) {
         try {
             if(loginField.getText().length() > 0 || passwordField.getText().length() > 0) {
 
@@ -61,29 +62,23 @@ public class LogInControllerImpl implements LogInController {
                     logger.info("User is logged in");
                     CurrentUser.setAuthToken(answer.getHeaders().get("Authorization").get(0));
                     //RETURN LOGIN ON SERVER WHEN LOGIN
-                    Stage applStage = new Stage();
-                    Parent applSceneRoot = null;
-                    try {
-                        applSceneRoot = FXMLLoader.load(LogInControllerImpl.this.getClass().getResource("/application.fxml"));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    applStage.setScene(new Scene(applSceneRoot, 620, 680));
-                    applStage.show();
+
+                     openWindow();
 
                     ((Stage) loginButton.getScene().getWindow()).close();
                     // NavigationProvider.NavigateToMainForm((Stage)signUpButton.getScene().getWindow());
                 }
             }
         } catch (Exception e) {
-            DialogProvider.ShowDialog("ERROR", "Wrong login or password", Alert.AlertType.ERROR);
+            DialogProvider.showDialog("ERROR", "Wrong login or password", Alert.AlertType.ERROR , false);
             logger.info(e.getMessage());
             System.out.println(e.getMessage());
         }
     }
 
+    @Override
     @FXML
-    private void onSignUpClick(ActionEvent event){
+    public void signUp(ActionEvent event){
         Stage signUp = new Stage();
         Parent signUpSceneRoot = null;
         try {
@@ -107,5 +102,17 @@ public class LogInControllerImpl implements LogInController {
         }
         changePassword.setScene(new Scene(changePasswordSceneRoot, 620, 570));
         changePassword.show();
+    }
+
+    public void openWindow(){
+        Stage applStage = new Stage();
+        Parent applSceneRoot = null;
+        try {
+            applSceneRoot = FXMLLoader.load(LogInControllerImpl.this.getClass().getResource("/application.fxml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        applStage.setScene(new Scene(applSceneRoot, 620, 680));
+        applStage.show();
     }
 }

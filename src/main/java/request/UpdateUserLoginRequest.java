@@ -1,12 +1,12 @@
 package request;
 
-public class AddChatRequest {
+public class UpdateUserLoginRequest {
     private String username;
 
-    public AddChatRequest() {
+    public UpdateUserLoginRequest() {
     }
 
-    public AddChatRequest(String username) {
+    public UpdateUserLoginRequest(String username) {
         this.username = username;
     }
 
@@ -20,8 +20,9 @@ public class AddChatRequest {
 
     @Override
     public String toString() {
-        return "AddChatRequest{" +
-                "login='" + username + '\'' +
+        return "UpdateUserRequest{" +
+                ", username='" + username + '\'' +
                 '}';
     }
+
 }

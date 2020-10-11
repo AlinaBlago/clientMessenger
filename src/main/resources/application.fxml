@@ -39,22 +39,22 @@
                         </Label>
                     </children>
                 </AnchorPane>
-                <Label fx:id="currentUserNameLabel" alignment="CENTER" layoutX="14.0" layoutY="113.0" prefHeight="26.0" prefWidth="306.0" text="Текст">
+                <Label fx:id="currentUserNameLabel" alignment="CENTER" layoutX="17.0" layoutY="110.0" prefHeight="26.0" prefWidth="366.0" text="Текст">
                     <font>
                         <Font name="Gabriola" size="20.0" />
                     </font>
                 </Label>
-                <Button fx:id="logoutButton" layoutX="508.0" layoutY="113.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="98.0" style="-fx-background-color: #82E0AA; -fx-background-radius: 10;" text="Выйти" textFill="WHITE">
+                <Button fx:id="logoutButton" layoutX="500.0" layoutY="110.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="98.0" style="-fx-background-color: #82E0AA; -fx-background-radius: 10;" text="Выйти" textFill="WHITE">
                     <font>
                         <Font name="Georgia" size="14.0" />
                     </font>
                 </Button>
-                <Button fx:id="sendButton" cache="true" ellipsisString="" layoutX="39.0" layoutY="610.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="106.0" style="-fx-background-color: #F06A6A; -fx-background-radius: 10;" text="Отправить" textFill="WHITE">
+                <Button fx:id="sendButton" cache="true" ellipsisString="" layoutX="17.0" layoutY="610.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="150.0" style="-fx-background-color: #F06A6A; -fx-background-radius: 10;" text="Отправить" textFill="WHITE">
                     <font>
                         <Font name="Georgia" size="14.0" />
                     </font>
                 </Button>
-                <SplitPane dividerPositions="0.40932642487046633" layoutX="17.0" layoutY="267.0" prefHeight="316.0" prefWidth="581.0">
+                <SplitPane dividerPositions="0.2987910189982729" layoutX="17.0" layoutY="191.0" prefHeight="392.0" prefWidth="581.0">
                     <items>
                         <ListView fx:id="usersListView" prefHeight="320.0" prefWidth="170.0" style="-fx-background-color: #82E0AA;">
                      <contextMenu>
@@ -64,21 +64,22 @@
                           </items>
                         </ContextMenu>
                      </contextMenu></ListView>
-                        <ListView fx:id="chatListView" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: pink;" />
+                        <ListView fx:id="chatListView" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: F06A6A;" />
                     </items>
                 </SplitPane>
-                <TextField fx:id="sendMessageField" layoutX="196.0" layoutY="607.0" prefHeight="35.0" prefWidth="402.0" style="-fx-background-radius: 10;" />
-                <Button fx:id="findUserButton" layoutX="397.0" layoutY="203.0" mnemonicParsing="false" prefHeight="12.0" prefWidth="98.0" style="-fx-background-color: #F06A6A; -fx-background-radius: 10;" text="Найти" textFill="WHITE">
+                <TextField fx:id="sendMessageField" layoutX="196.0" layoutY="607.0" prefHeight="35.0" prefWidth="400.0" style="-fx-background-radius: 10;" />
+                <Button fx:id="findUserButton" layoutX="500.0" layoutY="148.0" mnemonicParsing="false" prefHeight="12.0" prefWidth="98.0" style="-fx-background-color: #F06A6A; -fx-background-radius: 10;" text="Найти" textFill="WHITE">
                     <font>
                         <Font name="Georgia" size="14.0" />
                     </font>
                 </Button>
-            <Button fx:id="profileButton" layoutX="397.0" layoutY="113.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="98.0" style="-fx-background-color: F06A6A; -fx-background-radius: 10;" text="Профиль" textFill="WHITE">
+            <Button fx:id="profileButton" layoutX="396.0" layoutY="110.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="98.0" style="-fx-background-color: F06A6A; -fx-background-radius: 10;" text="Профиль" textFill="WHITE">
                <font>
                   <Font name="Georgia" size="14.0" />
                </font>
             </Button>
-            <ComboBox fx:id="findUserComboBox" layoutX="62.0" layoutY="203.0" opacity="0.5" prefHeight="27.0" prefWidth="279.0" style="-fx-background-radius: 10;" />
+            <ComboBox fx:id="findUserComboBox" layoutX="196.0" layoutY="147.0" opacity="0.5" prefHeight="27.0" prefWidth="296.0" style="-fx-background-radius: 10;" />
+            <TextField fx:id="txtFindLogin" layoutX="17.0" layoutY="147.0" prefHeight="27.0" prefWidth="169.0" style="-fx-background-radius: 10;" />
             </children>
         </AnchorPane>
     </children>

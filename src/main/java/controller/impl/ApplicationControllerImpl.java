@@ -1,8 +1,13 @@
 package controller.impl;
 
+import com.launchdarkly.eventsource.EventHandler;
+import com.launchdarkly.eventsource.EventSource;
 import controller.ApplicationController;
 import data.CurrentUser;
+import data.SimpleEventHandler;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,14 +15,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import okhttp3.Headers;
+import okhttp3.HttpUrl;
 import org.springframework.http.ResponseEntity;
 import providers.DialogProvider;
 import providers.ServerConnectionProvider;
-import request.AddChatRequest;
-import request.GetChatRequest;
+import request.UserRequest;
 import request.SendMessageRequest;
 import response.ChatResponse;
+import response.FindUserResponse;
 import response.MessageResponse;
+import runner.Main;
 import util.FxUtilTest;
 
 import java.io.IOException;
@@ -25,6 +33,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class ApplicationControllerImpl implements ApplicationController {
 
@@ -47,6 +56,9 @@ public class ApplicationControllerImpl implements ApplicationController {
     TextField sendMessageField;
 
     @FXML
+    TextField txtFindLogin;
+
+    @FXML
     ComboBox<String> findUserComboBox;
 
     @FXML
@@ -59,16 +71,7 @@ public class ApplicationControllerImpl implements ApplicationController {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        logoutButton.setOnAction(this::logOut);
-
-        findUserButton.setOnAction(this::findUser);
-
-        sendButton.setOnAction(this::send);
-
-        profileButton.setOnAction(this::onUserProfileClick);
-
-        usersListView.getSelectionModel().selectedItemProperty().addListener(this::usersListViewChanged);
-
+        bindEventActions();
         bindThreadCheckNewMessages();
 
         try {
@@ -79,6 +82,20 @@ public class ApplicationControllerImpl implements ApplicationController {
         }
 
         setCurrentUserNameToWindow();
+    }
+
+    private void bindEventActions(){
+        logoutButton.setOnAction(this::logOut);
+
+        findUserButton.setOnAction(this::findUser);
+
+        sendButton.setOnAction(this::send);
+
+        profileButton.setOnAction(this::onUserProfileClick);
+
+        usersListView.getSelectionModel().selectedItemProperty().addListener(this::usersListViewChanged);
+
+        txtFindLogin.textProperty().addListener(this::textChanged);
     }
 
     @FXML
@@ -104,49 +121,69 @@ public class ApplicationControllerImpl implements ApplicationController {
             sendMessageRequest.setReceiver(usersListView.getSelectionModel().getSelectedItem());
             sendMessageRequest.setMessage(sendMessageField.getText());
 
-            ResponseEntity<String> answer = ServerConnectionProvider.getInstance().sendMessage(sendMessageRequest);
+            ResponseEntity<MessageResponse> answer = ServerConnectionProvider.getInstance().sendMessage(sendMessageRequest);
+            sendMessageField.clear();
 
             if (answer.getStatusCode().is2xxSuccessful()) {
-                sendMessageField.clear();
-                chatListView.getItems().add(sendMessageField.getText());
+                DateFormat formatter = new SimpleDateFormat("HH:mm");
+                formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+                String dateFormatted = formatter.format(answer.getBody().getDate().getTime());
+                chatListView.getItems().add(dateFormatted + " " + answer.getBody().getSenderLogin() + " : " + answer.getBody().getMessage());
                 chatListView.refresh();
-//                chatListView.getItems().add(answer.getBody().getMessage());
-//                chatListView.refresh();
             } else{
                 logger.warn("Response not 200 from server: " + answer.getStatusCode());
-                DialogProvider.ShowDialog("ERROR", "Message doesn't sent", Alert.AlertType.ERROR);
+                DialogProvider.showDialog("ERROR", "Message doesn't sent", Alert.AlertType.ERROR , false);
             }
         }
     }
 
-    //TODO
+    @FXML
+    public void textChanged(ObservableValue<? extends String> observable,
+                            String oldValue, String newValue){
+        if (newValue.length() >= 2) {
+            findUserComboBox.getItems().clear();
+            UserRequest request = new UserRequest();
+            request.setUsername(newValue);
+            ResponseEntity<FindUserResponse> answer = ServerConnectionProvider.getInstance().findUser(request);
+            logger.info("Request sent");
+
+            if (answer.getStatusCode().is2xxSuccessful()) {
+                logger.info("Response 200 from server");
+                answer.getBody().getUsernames().forEach(username ->{
+                    findUserComboBox.getItems().addAll(username);
+                });
+
+            } else {
+                logger.warn("Response not 200 from server: " + answer.getStatusCode());
+                DialogProvider.showDialog("ERROR", "User not found", Alert.AlertType.ERROR, false);
+
+            }
+        }
+    }
+
     @FXML
     @Override
     public void findUser(ActionEvent event) {
-        if (findUserComboBox.getEditor().getLength() == 0){
-            return;
-        }
-        try {
+        if (!findUserComboBox.getSelectionModel().getSelectedItem().isBlank())
+        {
+            String login = findUserComboBox.getSelectionModel().getSelectedItem();
             logger.info("Start send 'findUser' to server");
 
             FxUtilTest.getComboBoxValue(findUserComboBox);
-            AddChatRequest request = new AddChatRequest();
-            request.setUsername(findUserComboBox.getEditor().getText());
+            UserRequest request = new UserRequest();
+            request.setUsername(login);
             ResponseEntity<ChatResponse> answer = ServerConnectionProvider.getInstance().addChat(request);
             logger.info("Request sent");
 
             if (answer.getStatusCode().is2xxSuccessful()) {
-                logger.info("Response 0 from server");
-                usersListView.getItems().add(findUserComboBox.getEditor().getText());
-                findUserComboBox.getEditor().clear();
+                logger.info("Response 200 from server");
+                usersListView.getItems().add(login);
+                usersListView.refresh();
             } else {
-                logger.warn("Response not 0 from server: " + answer.getStatusCode());
-                DialogProvider.ShowDialog("ERROR", "User not found", Alert.AlertType.ERROR);
+                logger.warn("Response not 200 from server: " + answer.getStatusCode());
+                DialogProvider.showDialog("ERROR", "User not found", Alert.AlertType.ERROR , false);
 
             }
-        } catch (Exception e){
-            logger.warn(e.getMessage());
-            System.out.println(e.getMessage());
         }
     }
 
@@ -158,69 +195,63 @@ public class ApplicationControllerImpl implements ApplicationController {
 
     @Override
     public void bindThreadCheckNewMessages() {
-//        Task task = new Task() {
-//            @Override
-//            protected Void call() throws IOException {
-//                do {
-//                    List<ServerArgument> argumentsList = new ArrayList<>();
-//                    argumentsList.add(new ServerArgument("senderLogin", CurrentUser.getCurrentUser().getLogin()));
-//
-//                    ResponseEntity<Integer> answer = ServerConnectionProvider.getInstance().loginRequest("haveNewMessages", argumentsList, RequestType.GET);
-//
-//                    Gson gson = new Gson();
-//
-//                    if (Objects.equals(answer.getBody(), 0)) {
-//                        Type listType = new TypeToken<Set<String>>() {
-//                        }.getType();
-//                        //TODO
-//                        Set<String> users = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
-//                    }
-//
-//                    Type listType = new TypeToken<ArrayList<String>>() {
-//                    }.getType();
-//                    //TODO
-//                    ArrayList<String> usersChatUpdated = gson.fromJson(String.valueOf(answer.getStatusCode()), listType);
-//
-//                    if (usersChatUpdated.size() != 0) {
-//                        ObservableList<String> arrUsers = usersListView.getItems();
-//
-//                        usersChatUpdated.forEach(item -> {
-//                            if (CurrentUser.currentChat.equals(item)) {
-//                                Platform.runLater(() -> {
-//                                    try {
-//                                        updateChatForUser(item);
-//                                    } catch (IOException e) {
-//                                        logger.warn("Chat doesn't update");
-//                                        e.printStackTrace();
-//                                    }
-//                                });
-//                            }
-//                        });
-//                    }
-//                        // TODO: доделать обновление для других пользователей
-//
-//                        try {
-//                            Thread.sleep(2000);
-//                        } catch (InterruptedException e) {
-//                            logger.warn("Error in Thread");
-//                            e.printStackTrace();
-//                        }
-//
-//                } while(true) ;
-//            }
-//        };
-//        logger.info("Thread bound");
-//        CurrentUser.ourThread = new Thread(task);
-//        CurrentUser.ourThread.start();
-//        logger.info("Thread started");
+
+        Task task = new Task<Void>() {
+            @Override
+            public Void call() {
+                SimpleEventHandler simleEvent = new SimpleEventHandler();
+                simleEvent.setRetrieveMessage(retrieveMessage());
+
+                EventHandler eventHandler = simleEvent;
+
+                String url = String.format("http://localhost:8080/users/me/newMessages");
+                EventSource.Builder builder = new EventSource.Builder(eventHandler, HttpUrl.get(url));
+
+
+                Headers headers = new Headers.Builder()
+                        .add("Authorization", CurrentUser.getAuthToken())
+                        .build();
+
+                builder.headers(headers);
+                try (EventSource eventSource = builder.build()) {
+                    eventSource.start();
+
+                    TimeUnit.MINUTES.sleep(24 * 60);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+        };
+
+        Main.t1 = new Thread(task);
+        Main.t1.start();
+    }
+
+    public RetrieveMessage retrieveMessage(){
+        return new RetrieveMessage() {
+            @Override
+            public void retrieve(List<MessageResponse> responses) {
+                responses.forEach(response -> {
+                    if(selectedChatLogin.equals(response.getSenderLogin())){
+                        DateFormat formatter = new SimpleDateFormat("HH:mm");
+                        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        String dateFormatted = formatter.format(response.getDate().getTime());
+                        chatListView.getItems().add(dateFormatted + " " + response.getSenderLogin() + " : " + response.getMessage());
+                        chatListView.refresh();
+                    }
+                });
+            }
+        };
     }
 
     @Override
     public void updateChatForUser(String login) throws IOException {
         logger.info("Sending 'updateChatForUser' request to server");
 
-        GetChatRequest request = new GetChatRequest();
-        request.setUser(usersListView.getSelectionModel().getSelectedItem());
+        UserRequest request = new UserRequest();
+        request.setUsername(usersListView.getSelectionModel().getSelectedItem());
 
         ResponseEntity<List<MessageResponse>> answer = ServerConnectionProvider.getInstance().getChat(request);
 
@@ -228,9 +259,6 @@ public class ApplicationControllerImpl implements ApplicationController {
 
         if (answer.getStatusCode().is2xxSuccessful()) {
             logger.info("Successful");
-//            usersListView.getItems().add(findUserLogin.getText());
-//            usersListView.refresh();
-//            chatListView.getItems().clear();
 
         for(MessageResponse msg : answer.getBody()){
             DateFormat formatter = new SimpleDateFormat("HH:mm");
@@ -245,8 +273,7 @@ public class ApplicationControllerImpl implements ApplicationController {
         chatListView.scrollTo(index);
         } else {
             logger.warn("Error: " + answer.getStatusCode());
-            DialogProvider.ShowDialog("ERROR", "Loading error", Alert.AlertType.ERROR);
-
+            DialogProvider.showDialog("ERROR", "Loading error", Alert.AlertType.ERROR , false);
         }
     }
 
@@ -273,7 +300,6 @@ public class ApplicationControllerImpl implements ApplicationController {
 
     @FXML
     private void onUserProfileClick(ActionEvent event){
-
         Stage userProfile = new Stage();
         Parent userProfileSceneRoot = null;
         try {
@@ -294,6 +320,9 @@ public class ApplicationControllerImpl implements ApplicationController {
         Stage stageToClose = (Stage) logoutButton.getScene().getWindow();
         stageToClose.close();
 
+
+        Main.StopThread();
+
         Stage mainStage = new Stage();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/logIn.fxml"));
@@ -308,3 +337,5 @@ public class ApplicationControllerImpl implements ApplicationController {
         logger.info("Opened logIn.fxml");
     }
 }
+
+

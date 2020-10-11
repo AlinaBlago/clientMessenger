@@ -37,18 +37,18 @@ public class LogUpControllerImpl implements LogUpController {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        signUpButton.setOnAction(this::onSignUpClick);
+        signUpButton.setOnAction(this::signUp);
     }
 
     @Override
     @FXML
-    public void onSignUpClick(ActionEvent event){
+    public void signUp(ActionEvent event){
         try {
             try {
                 validateSignUpFields();
             } catch (ValidationException e) {
                 logger.warn(e.getMessage());
-                DialogProvider.ShowDialog(e.GetPropertyName() , e.GetPropertyError());
+                DialogProvider.showDialog(e.GetPropertyName() , e.GetPropertyError());
                 return;
             }
             logger.info("Request sign up sending");
@@ -57,10 +57,10 @@ public class LogUpControllerImpl implements LogUpController {
             logger.info("Request was sent");
 
             if(answer.getStatusCode().is2xxSuccessful()){
-                DialogProvider.ShowDialog("SUCCESSFUL" , "New user created");
+                DialogProvider.showDialog("SUCCESSFUL" , "New user created");
                 ((Stage) signUpButton.getScene().getWindow()).close();
             }else{
-                DialogProvider.ShowDialog("ERROR" , "Something went wrong" , Alert.AlertType.ERROR);
+                DialogProvider.showDialog("ERROR" , "Something went wrong" , Alert.AlertType.ERROR , false);
             }
 
         } catch (Exception e) {

@@ -10,6 +10,6 @@ public interface LogUpController extends Initializable {
 
     Logger logger = LoggerFactory.getLogger(LogUpController.class);
 
-    void onSignUpClick(ActionEvent event);
+    void signUp(ActionEvent event);
 
 }

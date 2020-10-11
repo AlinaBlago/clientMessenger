@@ -28,6 +28,7 @@ import java.util.List;
 
 public class Main extends Application {
 
+    public static Thread t1;
     Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
     @Override
@@ -42,17 +43,20 @@ public class Main extends Application {
     }
 
         //TODO
-//    @Override
-//    protected void finalize() throws Throwable {
-//        super.finalize();
-//        CurrentUser.ourThread.stop();
-//        logger.info("Program finalized");
-//    }
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        StopThread();
+    }
 
     public static void main(String[] args){
         launch(args);
+    }
 
-
+    public static void StopThread(){
+        if(t1 != null){
+            t1.stop();
+        }
     }
 
 }
