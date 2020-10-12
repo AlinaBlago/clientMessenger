@@ -18,6 +18,7 @@ import response.ChangePasswordResponse;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class ChangePasswordControllerImpl implements ChangePasswordController {
@@ -44,7 +45,7 @@ public class ChangePasswordControllerImpl implements ChangePasswordController {
         ResponseEntity<ChangePasswordResponse> answer = ServerConnectionProvider.getInstance().getToken(requestBody);
         logger.info("Request was sent");
 
-        CurrentUser.setUsername(answer.getBody().getUsername());
+        CurrentUser.setUsername(Objects.requireNonNull(answer.getBody()).getUsername());
         CurrentUser.setChangePasswordToken(answer.getBody().getToken());
         System.out.println(CurrentUser.getUsername());
 

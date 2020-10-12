@@ -126,7 +126,7 @@ public class ApplicationControllerImpl implements ApplicationController {
             if (answer.getStatusCode().is2xxSuccessful()) {
                 DateFormat formatter = new SimpleDateFormat("HH:mm");
                 formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-                String dateFormatted = formatter.format(answer.getBody().getDate().getTime());
+                String dateFormatted = formatter.format(Objects.requireNonNull(answer.getBody()).getDate().getTime());
                 chatListView.getItems().add(dateFormatted + " " + answer.getBody().getSenderLogin() + " : " + answer.getBody().getMessage());
                 chatListView.refresh();
             } else{
@@ -148,7 +148,7 @@ public class ApplicationControllerImpl implements ApplicationController {
 
             if (answer.getStatusCode().is2xxSuccessful()) {
                 logger.info("Response 200 from server");
-                answer.getBody().getUsernames().forEach(username ->{
+                Objects.requireNonNull(answer.getBody()).getUsernames().forEach(username ->{
                     findUserComboBox.getItems().addAll(username);
                 });
 
@@ -203,7 +203,7 @@ public class ApplicationControllerImpl implements ApplicationController {
 
                 EventHandler eventHandler = simleEvent;
 
-                String url = String.format("http://localhost:8080/users/me/newMessages");
+                String url = "http://localhost:8080/users/me/newMessages";
                 EventSource.Builder builder = new EventSource.Builder(eventHandler, HttpUrl.get(url));
 
 
@@ -259,7 +259,7 @@ public class ApplicationControllerImpl implements ApplicationController {
         if (answer.getStatusCode().is2xxSuccessful()) {
             logger.info("Successful");
 
-        for(MessageResponse msg : answer.getBody()){
+        for(MessageResponse msg : Objects.requireNonNull(answer.getBody())){
             DateFormat formatter = new SimpleDateFormat("HH:mm");
             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
             String dateFormatted = formatter.format(msg.getDate().getTime());
@@ -284,7 +284,7 @@ public class ApplicationControllerImpl implements ApplicationController {
 
         List<String> chats = new ArrayList();
 
-        answer.getBody().forEach(chatResponse ->
+        Objects.requireNonNull(answer.getBody()).forEach(chatResponse ->
         {
             if(!chatResponse.getLoginFirst().equals(CurrentUser.getUsername())){
                 chats.add(chatResponse.getLoginFirst());

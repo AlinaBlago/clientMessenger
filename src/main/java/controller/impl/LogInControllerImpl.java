@@ -61,12 +61,10 @@ public class LogInControllerImpl implements LogInController {
                     CurrentUser.setUsername(loginField.getText());
                     logger.info("User is logged in");
                     CurrentUser.setAuthToken(answer.getHeaders().get("Authorization").get(0));
-                    //RETURN LOGIN ON SERVER WHEN LOGIN
 
-                     openWindow();
+                    openWindow();
 
                     ((Stage) loginButton.getScene().getWindow()).close();
-                    // NavigationProvider.NavigateToMainForm((Stage)signUpButton.getScene().getWindow());
                 }
             }
         } catch (Exception e) {
@@ -92,7 +90,6 @@ public class LogInControllerImpl implements LogInController {
 
     @FXML
     private void onChangePasswordClick(ActionEvent event){
-
         Stage changePassword = new Stage();
         Parent changePasswordSceneRoot = null;
         try {
