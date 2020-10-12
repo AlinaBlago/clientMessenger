@@ -6,7 +6,6 @@ import controller.ApplicationController;
 import data.CurrentUser;
 import data.SimpleEventHandler;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

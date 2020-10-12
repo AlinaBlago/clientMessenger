@@ -27,7 +27,7 @@
     <children>
         <AnchorPane prefHeight="680.0" prefWidth="480.0">
             <children>
-                <AnchorPane prefHeight="96.0" prefWidth="620.0" style="-fx-background-color: #f06a6a;">
+                <AnchorPane prefHeight="96.0" prefWidth="620.0" style="-fx-background-color: #B24C4C;">
                     <cursor>
                         <Cursor fx:constant="DEFAULT" />
                     </cursor>
@@ -44,19 +44,19 @@
                         <Font name="Gabriola" size="20.0" />
                     </font>
                 </Label>
-                <Button fx:id="logoutButton" layoutX="500.0" layoutY="110.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="98.0" style="-fx-background-color: #82E0AA; -fx-background-radius: 10;" text="Выйти" textFill="WHITE">
+                <Button fx:id="logoutButton" layoutX="500.0" layoutY="110.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="98.0" style="-fx-background-color: #f0e68c; -fx-background-radius: 10;" text="Выйти" textFill="WHITE">
                     <font>
                         <Font name="Georgia" size="14.0" />
                     </font>
                 </Button>
-                <Button fx:id="sendButton" cache="true" ellipsisString="" layoutX="17.0" layoutY="610.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="150.0" style="-fx-background-color: #F06A6A; -fx-background-radius: 10;" text="Отправить" textFill="WHITE">
+                <Button fx:id="sendButton" cache="true" ellipsisString="" layoutX="17.0" layoutY="610.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="150.0" style="-fx-background-color: #708090; -fx-background-radius: 10;" text="Отправить" textFill="WHITE">
                     <font>
                         <Font name="Georgia" size="14.0" />
                     </font>
                 </Button>
                 <SplitPane dividerPositions="0.2987910189982729" layoutX="17.0" layoutY="191.0" prefHeight="392.0" prefWidth="581.0">
                     <items>
-                        <ListView fx:id="usersListView" prefHeight="320.0" prefWidth="170.0" style="-fx-background-color: #82E0AA;">
+                        <ListView fx:id="usersListView" prefHeight="320.0" prefWidth="170.0" style="-fx-background-color: #f0e68c;">
                      <contextMenu>
                         <ContextMenu>
                           <items>
@@ -64,16 +64,16 @@
                           </items>
                         </ContextMenu>
                      </contextMenu></ListView>
-                        <ListView fx:id="chatListView" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: F06A6A;" />
+                        <ListView fx:id="chatListView" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #B24C4C;" />
                     </items>
                 </SplitPane>
                 <TextField fx:id="sendMessageField" layoutX="196.0" layoutY="607.0" prefHeight="35.0" prefWidth="400.0" style="-fx-background-radius: 10;" />
-                <Button fx:id="findUserButton" layoutX="500.0" layoutY="148.0" mnemonicParsing="false" prefHeight="12.0" prefWidth="98.0" style="-fx-background-color: #F06A6A; -fx-background-radius: 10;" text="Найти" textFill="WHITE">
+                <Button fx:id="findUserButton" layoutX="500.0" layoutY="148.0" mnemonicParsing="false" prefHeight="12.0" prefWidth="98.0" style="-fx-background-color: #B24C4C; -fx-background-radius: 10;" text="Добавить" textFill="WHITE">
                     <font>
                         <Font name="Georgia" size="14.0" />
                     </font>
                 </Button>
-            <Button fx:id="profileButton" layoutX="396.0" layoutY="110.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="98.0" style="-fx-background-color: F06A6A; -fx-background-radius: 10;" text="Профиль" textFill="WHITE">
+            <Button fx:id="profileButton" layoutX="396.0" layoutY="110.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="98.0" style="-fx-background-color: #708090; -fx-background-radius: 10;" text="Профиль" textFill="WHITE">
                <font>
                   <Font name="Georgia" size="14.0" />
                </font>

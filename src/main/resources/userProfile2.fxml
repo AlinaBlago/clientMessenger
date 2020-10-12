@@ -29,7 +29,7 @@
     <children>
         <AnchorPane prefHeight="759.0" prefWidth="620.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
             <children>
-                <AnchorPane layoutY="-10.0" prefHeight="136.0" prefWidth="620.0" style="-fx-background-color: #F06A6A;">
+                <AnchorPane layoutY="-10.0" prefHeight="136.0" prefWidth="620.0" style="-fx-background-color: #B24C4C;">
                     <cursor>
                         <Cursor fx:constant="DEFAULT" />
                     </cursor>
@@ -49,7 +49,7 @@
                         <Glow level="0.25" />
                     </effect>
                 </Label>
-                <Button fx:id="submitPasswordButton" alignment="CENTER" cache="true" contentDisplay="CENTER" ellipsisString="" layoutX="62.0" layoutY="582.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="99.0" style="-fx-background-color: #82E0AA; -fx-background-radius: 10;" text="Далее" textFill="WHITE">
+                <Button fx:id="submitPasswordButton" alignment="CENTER" cache="true" contentDisplay="CENTER" ellipsisString="" layoutX="75.0" layoutY="582.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="74.0" style="-fx-background-color: #f0e68c; -fx-background-radius: 10;" text="Далее" textFill="WHITE">
                     <font>
                         <Font name="Georgia" size="18.0" />
                     </font>
@@ -113,17 +113,17 @@
                 </Label>
                 <PasswordField fx:id="oldPasswordField" layoutX="39.0" layoutY="357.0" prefHeight="31.0" prefWidth="146.0" style="-fx-background-radius: 10;" />
                 <TextField fx:id="loginField" layoutX="369.0" layoutY="383.0" prefHeight="31.0" prefWidth="146.0" style="-fx-background-radius: 10;" />
-                <Button fx:id="submitLoginPassword" layoutX="404.0" layoutY="446.0" mnemonicParsing="false" style="-fx-background-color: #82E0AA; -fx-background-radius: 10;" text="Далее" textFill="WHITE">
+                <Button fx:id="submitLoginPassword" layoutX="404.0" layoutY="446.0" mnemonicParsing="false" style="-fx-background-color: #f0e68c; -fx-background-radius: 10;" text="Далее" textFill="WHITE">
                     <font>
                         <Font name="Georgia" size="18.0" />
                     </font>
                 </Button>
-            <Button fx:id="changeEmailButton" layoutX="399.0" layoutY="211.0" mnemonicParsing="false" style="-fx-background-color: #82E0AA; -fx-background-radius: 10;" text="Сменить" textFill="WHITE">
+            <Button fx:id="changeEmailButton" layoutX="399.0" layoutY="211.0" mnemonicParsing="false" style="-fx-background-color: #f0e68c; -fx-background-radius: 10;" text="Сменить" textFill="WHITE">
                <font>
                   <Font name="Georgia" size="16.0" />
                </font>
             </Button>
-            <Button fx:id="deleteButton" layoutX="245.0" layoutY="660.0" mnemonicParsing="false" style="-fx-background-color: #82E0AA; -fx-background-radius: 10;" text="Удалить аккаунт" textFill="WHITE">
+            <Button fx:id="deleteButton" layoutX="245.0" layoutY="660.0" mnemonicParsing="false" style="-fx-background-color: #708090; -fx-background-radius: 10;" text="Удалить аккаунт" textFill="WHITE">
                <font>
                   <Font name="Georgia" size="14.0" />
                </font>

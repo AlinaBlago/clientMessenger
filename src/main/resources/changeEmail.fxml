@@ -28,7 +28,7 @@
     <children>
         <AnchorPane prefHeight="450.0" prefWidth="620.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
             <children>
-                <AnchorPane layoutY="-10.0" prefHeight="136.0" prefWidth="620.0" style="-fx-background-color: #F06A6A;">
+                <AnchorPane layoutY="-10.0" prefHeight="136.0" prefWidth="620.0" style="-fx-background-color: #B24C4C;">
                     <cursor>
                         <Cursor fx:constant="DEFAULT" />
                     </cursor>
@@ -50,7 +50,7 @@
                 </Label>
                 <Label layoutX="209.0" layoutY="551.0" />
                 <TextField fx:id="emailField" layoutX="245.0" layoutY="214.0" prefHeight="31.0" prefWidth="146.0" style="-fx-background-radius: 10;" />
-                <Button fx:id="submitButton" layoutX="281.0" layoutY="289.0" mnemonicParsing="false" style="-fx-background-color: #82E0AA; -fx-background-radius: 10;" text="Далее" textFill="WHITE">
+                <Button fx:id="submitButton" layoutX="281.0" layoutY="289.0" mnemonicParsing="false" style="-fx-background-color: #f0e68c; -fx-background-radius: 10;" text="Далее" textFill="WHITE">
                     <font>
                         <Font name="Georgia" size="18.0" />
                     </font>
