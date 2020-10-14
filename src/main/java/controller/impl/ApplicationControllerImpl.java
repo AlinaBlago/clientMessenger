@@ -203,7 +203,7 @@ public class ApplicationControllerImpl implements ApplicationController {
 
                 EventHandler eventHandler = simleEvent;
 
-                String url = "http://localhost:8080/users/me/newMessages";
+                String url = "https://xettlena.herokuapp.com/users/me/newMessages";
                 EventSource.Builder builder = new EventSource.Builder(eventHandler, HttpUrl.get(url));
 
 

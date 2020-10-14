@@ -18,7 +18,7 @@ public class ServerConnectionProvider {
     private static RestTemplate restTempl = new RestTemplate();
     HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 
-    public static final String serverURL = "http://localhost:8080/";
+    public static final String serverURL = "https://xettlena.herokuapp.com/"; //"http://localhost:8080/";
 
     public static ServerConnectionProvider getInstance() {
         if (instance == null) instance = new ServerConnectionProvider();
